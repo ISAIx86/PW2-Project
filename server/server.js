@@ -1,7 +1,24 @@
-const express = require('express')
+require('dotenv').config()
 
-const app = express()
+const mongoose = require('mongoose')
+mongoose.connect(process.env.DATABASE, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+})
 
-app.get('/endpoint', (req, res) => res.send('<h1>Esto es un endpoint</h1>'))
+mongoose.connection.on('error', (err) => {
+    console.log("Error de conexión con Mongoosse: " + err.message)
+})
 
-app.listen(5005, () => console.log('SERVIDOR LEVANTADO'))
+mongoose.connection.once('open', () => {
+    console.log("Conectado con MongoDB!")
+})
+
+// Traer modelos
+require('./models/User')
+
+const app = require('./app')
+
+app.listen(5000, () => {
+    console.log("Servidor activo y escuchando el puerto 5000")
+})
