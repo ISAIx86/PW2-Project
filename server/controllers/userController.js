@@ -60,6 +60,16 @@ exports.register = async (req, res) => {
         password: sha256(password + process.env.SALT)
     })
 
+    if (req.files) {
+        const file = req.files.image
+        const extension = file.name.split('.').pop()
+        const new_filename = `user_${user.id}.${extension}`
+        user.setImage(new_filename)
+        file.mv(`./storage/users_images/${new_filename}`, (err, result) => {
+            if (err) throw err;
+        })
+    }
+
     await user.save()
 
     res.json({
