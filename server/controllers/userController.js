@@ -77,3 +77,54 @@ exports.register = async (req, res) => {
     })
 
 }
+
+exports.update = async (req, res) => {
+
+    const {
+        nombres,
+        apellidos,
+        username,
+        fecha_nac,
+        email
+    } = req.body
+
+    const uid = req.payload.id
+
+    const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
+
+    if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
+
+    const user_exists = await User.findOne({
+        _id: {$ne: uid},
+        email
+    })
+
+    if (user_exists) throw "Ya existe un usuario con este correo."
+
+    const user = await User.findOne({ _id: uid })
+
+    if (req.files) {
+        const file = req.files.image
+        const extension = file.name.split('.').pop()
+        const new_filename = `user_${user.id}.${extension}`
+        user.setImage(new_filename)
+        file.mv(`./storage/users_images/${new_filename}`, (err, result) => {
+            if (err) throw err;
+        })
+    }
+
+    user.set({
+        nombres,
+        apellidos,
+        username,
+        fecha_nac,
+        email
+    })
+
+    await user.save()
+
+    res.json({
+        message: "Datos actualizados."
+    })
+
+}
