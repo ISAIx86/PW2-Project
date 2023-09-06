@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
-const User = mongoose.model('Usuarios')
+const User = mongoose.model('usuarios')
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
+const uploader = require('../middlewares/uploader')
+const fs = require('fs')
 
 exports.login = async (req, res) => {
 
@@ -12,12 +14,39 @@ exports.login = async (req, res) => {
 
     const user = await User.findOne({
         email,
-        password: sha256(password + process.env.SALT)
+        password: sha256(password + process.env.SALT),
+        is_deleted: false
     })
 
     if (!user) throw "Correo o contraseña incorrectos."
 
     const token = await jwt.sign({id: user.id}, process.env.SECRET)
+
+    res.json({
+        message: "Bienvenido, " + user.username,
+        token
+    })
+
+}
+
+exports.login_mod = async (req, res) => {
+
+    const {
+        email,
+        password
+    } = req.body
+
+    const user = await User.findOne({
+        email,
+        password: sha256(password + process.env.SALT),
+        is_deleted: false
+    })
+
+    if (!user.is_mod) throw "No estas autorizado para acceder a las funciones de Moderador!"
+
+    if (!user) throw "Correo o contraseña incorrectos."
+
+    const token = await jwt.sign({id: user.id}, process.env.MOD_SECRET)
 
     res.json({
         message: "Bienvenido, " + user.username,
@@ -60,14 +89,19 @@ exports.register = async (req, res) => {
         password: sha256(password + process.env.SALT)
     })
 
-    if (req.files) {
-        const file = req.files.image
-        const extension = file.name.split('.').pop()
-        const new_filename = `user_${user.id}.${extension}`
-        user.setImage(new_filename)
-        file.mv(`./storage/users_images/${new_filename}`, (err, result) => {
-            if (err) throw err;
-        })
+    if (req.files && req.files.image) {
+
+        const filename = `${user.id}_${Date.now()}`
+
+        const path = await uploader.uploadInDestiny(
+            './storage/users_images',
+            req.files.image,
+            filename
+        )
+
+        if (fs.existsSync(path.final_path))
+            user.setImage(path.new_filename)
+
     }
 
     await user.save()
@@ -88,30 +122,22 @@ exports.update = async (req, res) => {
         email
     } = req.body
 
-    const uid = req.payload.id
+    const id = req.payload.id
 
     const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
 
     if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
 
     const user_exists = await User.findOne({
-        _id: {$ne: uid},
+        _id: {$ne: id},
         email
     })
 
     if (user_exists) throw "Ya existe un usuario con este correo."
 
-    const user = await User.findOne({ _id: uid })
+    const user = await User.findById(id)
 
-    if (req.files) {
-        const file = req.files.image
-        const extension = file.name.split('.').pop()
-        const new_filename = `user_${user.id}.${extension}`
-        user.setImage(new_filename)
-        file.mv(`./storage/users_images/${new_filename}`, (err, result) => {
-            if (err) throw err;
-        })
-    }
+    if (!user || user.is_deleted) throw "No se pudo encontrar un usuario con ese ID."
 
     user.set({
         nombres,
@@ -120,6 +146,21 @@ exports.update = async (req, res) => {
         fecha_nac,
         email
     })
+
+    if (req.files && req.files.image) {
+
+        const filename = `${user.id}_${Date.now()}`
+
+        const path = await uploader.uploadInDestiny(
+            './storage/users_images',
+            req.files.image,
+            filename
+        )
+
+        if (fs.existsSync(path.final_path))
+            user.setImage(path.new_filename)
+
+    }
 
     await user.save()
 

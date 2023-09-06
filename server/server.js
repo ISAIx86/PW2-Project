@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+// Conexión con MongoDB
 const mongoose = require('mongoose')
 mongoose.connect(process.env.DATABASE, {
     useUnifiedTopology: true,
@@ -16,7 +17,13 @@ mongoose.connection.once('open', () => {
 
 // Traer modelos
 require('./models/User')
+require('./models/Classification')
+require('./models/Developer')
+require('./models/Genre')
+require('./models/Platform')
+require('./models/Game')
 
+// Levantar la API
 const app = require('./app')
 
 app.listen(5000, () => {
