@@ -1,18 +1,77 @@
 const mongoose = require('mongoose')
 
 const game_schema = new mongoose.Schema({
-    titulo: {type: String, required: 'Se requiere el título.'},
-    descrip: {type: String, required: 'Se requiere una descripción del juego.'},
-    image: {type: String, required: 'Se requiere una imagen de título.'},
-    cover: {type: String, required: 'Se requiere una imagen de portada.'},
-    rating: {type: Number, default: 0.0},
-    classification: {type: mongoose.Types.ObjectId, required: 'El juego debe estar clasificado.'},
-    genre: [{type: mongoose.Types.ObjectId, ref: 'clasificaciones'}],
-    developers: [{type: mongoose.Types.ObjectId, ref: 'desarrolladores'}],
-    platforms: [{type: mongoose.Types.ObjectId, ref: 'plataformas'}],
-    followers: [{type: mongoose.Types.ObjectId, ref: 'usuarios'}],
-    is_deleted: {type: Boolean, default: false}
-},{
+    name_id: {
+        type: String,
+        required: 'Se requiere un nombre único.',
+        unique: 'Ya existe un juego con este nombre único.'
+    },
+    titulo: {
+        type: String,
+        required: 'Se requiere el título.'
+    },
+    descrip: {
+        type: String,
+        required: 'Se requiere una descripción del juego.'
+    },
+    image: {
+        type: String,
+        required: 'Se requiere una imagen de título.'
+    },
+    cover: {
+        type: String,
+        required: 'Se requiere una imagen de portada.'
+    },
+    rating: {
+        type: Number,
+        default: 0.0
+    },
+    classification: {
+        type: mongoose.Types.ObjectId,
+        required: 'El juego debe estar clasificado.'
+    },
+    genre: {
+        type: [mongoose.Types.ObjectId],
+        validate: {
+            validator: v => Array.isArray(v) & v.length > 0,
+            message: 'El juego debe tener al menos un género asociado.'
+        },
+        ref: 'clasificaciones',
+        required: 'El juego debe tener al menos un género asociado.'
+    },
+    developers: {
+        type: [mongoose.Types.ObjectId],
+        validate: {
+            validator: v => Array.isArray(v) & v.length > 0,
+            message: 'El juego debe tener al menos un desarrollador asociado.'
+        },
+        ref: 'desarrolladores',
+        required: 'El juego debe tener al menos un desarrollador asociado.'
+    },
+    platforms: {
+        type: [mongoose.Types.ObjectId],
+        validate: {
+            validator: v => Array.isArray(v) & v.length > 0,
+            message: 'El juego debe tener al menos una plataforma asociada.'
+        },
+        ref: 'plataformas',
+        required: 'El juego debe tener al menos una plataforma asociada.'
+    },
+    followers: {
+        type: [mongoose.Types.ObjectId],
+        ref: 'usuarios'
+    },
+    created_by: {
+        type: mongoose.Types.ObjectId,
+        ref: 'usuarios',
+        required: 'Se requiere el ID del creador.'
+    },
+    is_deleted: {
+        type: Boolean,
+        default: false
+    }
+},
+{
     timestamps: true
 })
 

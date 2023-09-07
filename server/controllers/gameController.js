@@ -6,6 +6,7 @@ const fs = require('fs')
 exports.create = async (req, res) => {
 
     const {
+        name_id,
         titulo,
         descrip,
         classification,
@@ -14,16 +15,20 @@ exports.create = async (req, res) => {
         platforms
     } = req.body
 
+    const id = req.payload.id
+
     if (!req.files.image) throw "Se requiere de una imagen de título."
     if (!req.files.cover) throw "Se requiere de una imagen de portada."
 
     const game = new Game({
+        name_id,
         titulo,
         descrip,
         classification,
         genre,
         developers,
-        platforms
+        platforms,
+        created_by: id
     })
 
     // SUBIR IMAGEN DE JUEGO y checar si existe.
@@ -56,6 +61,7 @@ exports.modify = async (req, res) => {
 
     const {
         id,
+        name_id,
         titulo,
         descrip,
         clasification,
@@ -64,11 +70,14 @@ exports.modify = async (req, res) => {
         platforms
     } = req.body
 
-    const game = await Game.findById(id)
-
-    if (!game || game.is_deleted) throw "No se pudo encontrar un juego con este ID."
+    const game = await Game.findOne({
+        _id: id,
+        is_deleted: false
+    })
+    if (!game) throw "No se pudo encontrar un juego con este ID."
 
     game.set({
+        name_id,
         titulo,
         descrip,
         clasification,
@@ -127,11 +136,14 @@ exports.delete = async (req, res) => {
 
 exports.getOne = async (req, res) => {
 
-    const id = req.params.game_id
+    const name_id = req.params.game_id
 
-    const game = await Game.findById(id)
+    const game = await Game.findOne({
+        name_id,
+        is_deleted: false
+    })
 
-    if (!game || game.is_deleted) throw "Juego no encontrado :C"
+    if (!game) throw "Juego no encontrado :C"
 
     res.json({
         message: "Lo tengo! Aquí está",

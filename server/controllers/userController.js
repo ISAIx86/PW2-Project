@@ -68,17 +68,14 @@ exports.register = async (req, res) => {
     } = req.body
 
     const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
+    const usernameRegex = /^[a-z0-9._]*$/
 
     if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
+    if (!usernameRegex.test(username)) throw "El nombre de usuario no es válido. No se admiten espacios ni mayúsculas."
+
     if (password === '') throw "La contraseña es requerida."
     if (password.length > 6) throw "La contraseña debe ser de menos de 6 caracteres."
     if (password !== conf_password) throw "La confirmación de contraseña no coincide."
-
-    const userExists = await User.findOne({
-        email
-    })
-
-    if (userExists) throw "Ya existe un usuario con este correo."
 
     const user = new User({
         nombres,
@@ -91,7 +88,7 @@ exports.register = async (req, res) => {
 
     if (req.files && req.files.image) {
 
-        const filename = `${user.id}_${Date.now()}`
+        const filename = `${user.username}_${Date.now()}`
 
         const path = await uploader.uploadInDestiny(
             './storage/users_images',
@@ -125,8 +122,9 @@ exports.update = async (req, res) => {
     const id = req.payload.id
 
     const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
-
+    const usernameRegex = /^[a-z0-9._]*$/
     if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
+    if (!usernameRegex.test(username)) throw "El nombre de usuario no es válido. No se admiten espacios ni mayúsculas."
 
     const user_exists = await User.findOne({
         _id: {$ne: id},
@@ -135,9 +133,12 @@ exports.update = async (req, res) => {
 
     if (user_exists) throw "Ya existe un usuario con este correo."
 
-    const user = await User.findById(id)
+    const user = await User.findOne({
+        _id: id,
+        is_deleted: false
+    })
 
-    if (!user || user.is_deleted) throw "No se pudo encontrar un usuario con ese ID."
+    if (!user) throw "No se pudo encontrar un usuario con ese ID."
 
     user.set({
         nombres,
@@ -149,7 +150,7 @@ exports.update = async (req, res) => {
 
     if (req.files && req.files.image) {
 
-        const filename = `${user.id}_${Date.now()}`
+        const filename = `${user.username}_${Date.now()}`
 
         const path = await uploader.uploadInDestiny(
             './storage/users_images',

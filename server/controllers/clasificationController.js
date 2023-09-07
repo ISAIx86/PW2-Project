@@ -39,9 +39,12 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
-    const curr_class = await Classification.findById(id)
+    const curr_class = await Classification.findOne({
+        _id: id,
+        is_deleted: false
+    })
 
-    if (!curr_class || curr_class.is_deleted) throw "No se pudo encontrar una clasificación con ese ID."
+    if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
 
     curr_class.set({
         title

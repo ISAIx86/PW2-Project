@@ -27,9 +27,12 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
-    const genre = await Genre.findById(id)
+    const genre = await Genre.findeOne({
+        _id: id,
+        is_deleted: false
+    })
 
-    if (!genre || genre.is_deleted) throw "No se pudo encontrar un género con este ID"
+    if (!genre) throw "No se pudo encontrar un género con este ID"
 
     genre.set({
         title

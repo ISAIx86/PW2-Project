@@ -27,9 +27,12 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
-    const dev = await Developer.findById(id)
+    const dev = await Developer.findOne({
+        _id: id,
+        is_deleted: false
+    })
 
-    if (!dev || dev.is_deleted) throw "No se pudo encontrar un desarrollador con ese ID."
+    if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
 
     dev.set({
         title
