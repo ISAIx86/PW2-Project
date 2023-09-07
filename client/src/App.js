@@ -1,8 +1,10 @@
 import './App.css';
+import Login from './Login';
+import Register from './Register';
 
 function App() {
   return (
-    <h1>HOLA MUNDO!</h1>
+    <Login/>
   );
 }
 
