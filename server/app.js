@@ -1,3 +1,4 @@
+const config = require('./config')
 const express = require('express')
 const app = express()
 
@@ -8,10 +9,10 @@ app.use(require('cors')())
 app.use(require('express-fileupload')())
 
 // Rutas estáticas
-app.use('/public/img_users', express.static(`${__dirname}/storage/users_images`))
-app.use('/public/game_title', express.static(`${__dirname}/resources/game_images`))
-app.use('/public/game_cover', express.static(`${__dirname}/resources/game_covers`))
-app.use('/public/esrb', express.static(`${__dirname}/resources/esrb_classifications`))
+app.use('/public/img_users', express.static(`${__dirname}/${config.directories.user_images}`))
+app.use('/public/game_title', express.static(`${__dirname}/${config.directories.game_images}`))
+app.use('/public/game_cover', express.static(`${__dirname}/${config.directories.game_covers}`))
+app.use('/public/esrb', express.static(`${__dirname}/${config.directories.esrb_logos}`))
 
 // Traer las rutas en este apratado
 app.use('/user', require('./routes/user_routes'))

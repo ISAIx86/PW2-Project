@@ -1,3 +1,4 @@
+const config = require('../config')
 const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
 const uploader = require('../middlewares/uploader')
@@ -9,20 +10,13 @@ exports.create = async (req, res) => {
         title
     } = req.body
 
-    if (!req.files && !req.files.image) throw "Se requiere una imagen de Clasificación!"
-
     const new_class = new Classification({
         title,
         created_by: req.payload.id
     })
 
-    const path = await uploader.uploadInDestiny(
-        './resources/esrb_classifications',
-        req.files.image,
-        new_class.id
-    )
-    if (fs.existsSync(path.final_path))
-        new_class.setImage(path.new_filename)
+    if (req.files && req.files.image)
+        await new_class.uploadImage(req.files.image)
 
     await new_class.save()
 
@@ -50,15 +44,8 @@ exports.modify = async (req, res) => {
         title
     })
 
-    if (req.files && req.files.image) {
-        const path = await uploader.uploadInDestiny(
-            './resources/esrb_classifications',
-            req.files.image,
-            curr_class.id
-        )
-        if (fs.existsSync(path.final_path))
-            curr_class.setImage(path.new_filename)
-    }
+    if (req.files && req.files.image)
+        await curr_class.uploadImage(req.files.image)
 
     await curr_class.save()
 
@@ -73,6 +60,8 @@ exports.delete = async (req, res) => {
     const { id } = req.body
 
     const curr_class = await Classification.findById(id)
+
+    if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
 
     curr_class.set({
         is_deleted: true

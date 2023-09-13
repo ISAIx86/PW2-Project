@@ -1,13 +1,11 @@
 const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
-const uploader = require('../middlewares/uploader')
-const fs = require('fs')
 
 exports.create = async (req, res) => {
 
     const {
         name_id,
-        titulo,
+        title,
         descrip,
         classification,
         genre,
@@ -17,12 +15,9 @@ exports.create = async (req, res) => {
 
     const id = req.payload.id
 
-    if (!req.files.image) throw "Se requiere de una imagen de título."
-    if (!req.files.cover) throw "Se requiere de una imagen de portada."
-
     const game = new Game({
         name_id,
-        titulo,
+        title,
         descrip,
         classification,
         genre,
@@ -31,23 +26,15 @@ exports.create = async (req, res) => {
         created_by: id
     })
 
-    // SUBIR IMAGEN DE JUEGO y checar si existe.
-    let path = await uploader.uploadInDestiny(
-        './resources/game_images',
-        req.files.image,
-        game.id
-    )
-    if (fs.existsSync(path.final_path))
-        game.setImage(path.new_filename)
+    await game.validate(['name_id'])
 
-    // SUBIR PORTADA DE JUEGO y checar si existe
-    path = await uploader.uploadInDestiny(
-        './resources/game_covers',
-        req.files.cover,
-        game.id
-    )
-    if (fs.existsSync(path.final_path))
-        game.setCover(path.new_filename)
+    // SUBIR IMAGEN DE JUEGO
+    if (req.files && req.files.image)
+        await game.uploadImage('title', req.files.image)
+
+    // SUBIR PORTADA DE JUEGO
+    if (req.files && req.files.cover)
+        await game.uploadImage('cover', req.files.cover)
 
     await game.save()
 
@@ -62,9 +49,9 @@ exports.modify = async (req, res) => {
     const {
         id,
         name_id,
-        titulo,
+        title,
         descrip,
-        clasification,
+        classification,
         genre,
         developers,
         platforms
@@ -78,35 +65,23 @@ exports.modify = async (req, res) => {
 
     game.set({
         name_id,
-        titulo,
+        title,
         descrip,
-        clasification,
+        classification,
         genre,
         developers,
         platforms
     })
 
-    // SUBIR NUEVA IMAGEN DE JUEGO, si existe
-    if (req.files && req.files.image) {
-        const path = await uploader.uploadInDestiny(
-            './resources/game_images',
-            req.files.image,
-            game.id
-        )
-        if (fs.existsSync(path.final_path))
-            game.setImage(path.new_filename)
-    }
+    await game.validate(['name_id'])
 
-    // SUBIR NUEVA PORTADA DE JUEGO, si existe
-    if (req.files && req.files.cover) {
-        const path = await uploader.uploadInDestiny(
-            './resources/game_covers',
-            req.files.cover,
-            game.id
-        )
-        if (fs.existsSync(path.final_path))
-            game.setImage(path.new_filename)
-    }
+    // SUBIR NUEVA IMAGEN DE JUEGO
+    if (req.files && req.files.image)
+        await game.uploadImage('title', req.files.image)
+
+    // SUBIR NUEVA PORTADA DE JUEGO
+    if (req.files && req.files.cover)
+        await game.uploadImage('cover', req.files.cover)
 
     await game.save()
 

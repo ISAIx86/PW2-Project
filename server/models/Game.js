@@ -1,12 +1,28 @@
+const config = require('../config')
 const mongoose = require('mongoose')
+const uploader = require('../middlewares/uploader')
+const fs = require('fs')
+const Regex = require('../handlers/regex')
 
 const game_schema = new mongoose.Schema({
     name_id: {
         type: String,
-        required: 'Se requiere un nombre único.',
-        unique: 'Ya existe un juego con este nombre único.'
+        validate: [
+            {
+                validator: async function (v) {
+                    const result = await this.constructor.findOne({_id: {$ne: this.id}, name_id: v})
+                    return !result
+                },
+                message: 'Ya existe un juego con este código de nombre.'
+            },
+            {
+                validator: v => Regex.usernames.test(v),
+                message: 'El código de nombre no tiene formato correcto.'
+            }
+        ],
+        required: 'Se requiere un nombre único.'
     },
-    titulo: {
+    title: {
         type: String,
         required: 'Se requiere el título.'
     },
@@ -74,6 +90,34 @@ const game_schema = new mongoose.Schema({
 {
     timestamps: true
 })
+
+game_schema.methods.uploadImage = async function uploadImage (type, img_file) {
+
+    if (type === 'title') {
+
+        const path = await uploader.uploadInDestiny(
+            `./${config.directories.game_images}`,
+            img_file,
+            this.id
+        )
+
+        if (fs.existsSync(path.final_path))
+            this.setImage(path.new_filename)
+
+    } else if (type === 'cover') {
+
+        const path = await uploader.uploadInDestiny(
+            `./${config.directories.game_covers}`,
+            img_file,
+            this.id
+        )
+
+        if (fs.existsSync(path.final_path))
+            this.setCover(path.new_filename)
+
+    }
+        
+}
 
 game_schema.methods.setImage = function setImage (filename) {
     this.image = filename

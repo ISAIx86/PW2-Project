@@ -50,7 +50,9 @@ exports.delete = async (req, res) => {
 
     const { id } = req.body
 
-    const dev = await Developer.findByIdAndDelete(id)
+    const dev = await Developer.findById(id)
+
+    if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
 
     dev.set({
         is_deleted: true

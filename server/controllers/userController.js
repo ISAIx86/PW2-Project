@@ -2,9 +2,7 @@ const mongoose = require('mongoose')
 const User = mongoose.model('usuarios')
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
-const uploader = require('../middlewares/uploader')
-const fs = require('fs')
-const date = require('date-and-time')
+const Regex = require('../handlers/regex')
 
 exports.login = async (req, res) => {
 
@@ -68,20 +66,7 @@ exports.register = async (req, res) => {
         conf_password
     } = req.body
 
-    const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
-    const usernameRegex = /^[a-z0-9._]*$/
-    const namesRegex = /^[_A-z]*((-|\s)*[_A-z])*$/
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-    const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=.{6,})/
-
-    if (!namesRegex.test(nombres)) throw "El nombre tiene caracteres inválidos."
-    if (!namesRegex.test(apellidos)) throw "El apellido tiene caracteres inválidos."
-    if (!dateRegex.test(fecha_nac)) throw "La fecha viene en formato inválido."
-    if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
-    if (!usernameRegex.test(username)) throw "El nombre de usuario no es válido. No se admiten espacios ni mayúsculas."
-    if (!passwordRegex.test(password)) throw "La contraseña viene en formato inválido."
-
-    if (password === '') throw "La contraseña es requerida."
+    if (!Regex.passwords.test(password)) throw "La contraseña tiene formato no válido."
     if (password !== conf_password) throw "La confirmación de contraseña no coincide."
 
     const user = new User({
@@ -93,20 +78,10 @@ exports.register = async (req, res) => {
         password: sha256(password + process.env.SALT)
     })
 
-    if (req.files && req.files.image) {
+    await user.validate()
 
-        const filename = `${user.id}_${date.format(new Date(), 'YYYY-MM-DD-HH-mm-ss')}`
-
-        const path = await uploader.uploadInDestiny(
-            './storage/users_images',
-            req.files.image,
-            filename
-        )
-
-        if (fs.existsSync(path.final_path))
-            user.setImage(path.new_filename)
-
-    }
+    if (req.files && req.files.image)
+        await user.uploadImage(req.files.image)
 
     await user.save()
 
@@ -128,23 +103,10 @@ exports.update = async (req, res) => {
 
     const id = req.payload.id
 
-    const emailRegex = /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/
-    const usernameRegex = /^[a-z0-9._]*$/
-    if (!emailRegex.test(email)) throw "El correo no es soportado o no tiene formato correcto."
-    if (!usernameRegex.test(username)) throw "El nombre de usuario no es válido. No se admiten espacios ni mayúsculas."
-
-    const user_exists = await User.findOne({
-        _id: {$ne: id},
-        email
-    })
-
-    if (user_exists) throw "Ya existe un usuario con este correo."
-
     const user = await User.findOne({
         _id: id,
         is_deleted: false
     })
-
     if (!user) throw "No se pudo encontrar un usuario con ese ID."
 
     user.set({
@@ -155,20 +117,10 @@ exports.update = async (req, res) => {
         email
     })
 
-    if (req.files && req.files.image) {
+    await user.validate()
 
-        const filename = `${user.id}_${date.format(new Date(), 'YYYY-MM-DD-HH-mm-ss')}`
-
-        const path = await uploader.uploadInDestiny(
-            './storage/users_images',
-            req.files.image,
-            filename
-        )
-
-        if (fs.existsSync(path.final_path))
-            user.setImage(path.new_filename)
-
-    }
+    if (req.files && req.files.image)
+        await user.uploadImage(req.files.image)
 
     await user.save()
 

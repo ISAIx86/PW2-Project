@@ -50,7 +50,9 @@ exports.delete = async (req, res) => {
 
     const { id } = req.body
 
-    const plat = await Platform.findByIdAndDelete(id)
+    const plat = await Platform.findById(id)
+
+    if (!plat) throw "No se pudo encontrar una plataforma con este ID."
 
     plat.set({
         is_deleted: true

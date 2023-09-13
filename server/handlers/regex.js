@@ -1,0 +1,10 @@
+const Regex = {
+    names: /^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/,
+    usernames: /^[a-z0-9._]*$/,
+    emails: /[@gmail.com|@yahoo.com|@hotmail.com|@live.com]$/,
+    passwords: /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#$%^&+=!])(?=.{6,})/,
+
+    dates: /^\d{4}-\d{2}-\d{2}$/
+}
+
+module.exports = Regex
