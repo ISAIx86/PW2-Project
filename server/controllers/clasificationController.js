@@ -1,9 +1,7 @@
-const config = require('../config')
 const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
-const uploader = require('../middlewares/uploader')
-const fs = require('fs')
 
+// Create
 exports.create = async (req, res) => {
 
     const {
@@ -26,6 +24,7 @@ exports.create = async (req, res) => {
 
 }
 
+// Updates
 exports.modify = async (req, res) => {
 
     const {
@@ -41,7 +40,7 @@ exports.modify = async (req, res) => {
     if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
 
     curr_class.set({
-        title
+        title: typeof title !== 'undefined' ? title : curr_class.title
     })
 
     if (req.files && req.files.image)

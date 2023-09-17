@@ -72,10 +72,6 @@ const user_schema = new mongoose.Schema({
     },
     password: {
         type: String,
-        validate: {
-            validator: v => v.length > 0,
-            message: 'La contraseña es requerida.'
-        },
         required: 'La contraseña es requerida.'
     },
     is_mod: {
@@ -91,6 +87,10 @@ const user_schema = new mongoose.Schema({
         ref: 'usuarios'
     },
     following: {
+        type: [mongoose.Types.ObjectId],
+        ref: 'usuarios'
+    },
+    requests: {
         type: [mongoose.Types.ObjectId],
         ref: 'usuarios'
     },

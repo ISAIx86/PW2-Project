@@ -18,11 +18,17 @@ mongoose.connection.once('open', () => {
 
 // Traer modelos
 require('./models/User')
+require('./models/Article')
+require('./models/Review')
+require('./models/Post')
+require('./models/Multimedia')
+require('./models/Report')
+
+require('./models/Game')
 require('./models/Classification')
 require('./models/Developer')
 require('./models/Genre')
 require('./models/Platform')
-require('./models/Game')
 
 // Levantar la API
 const app = require('./app')

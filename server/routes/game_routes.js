@@ -6,6 +6,8 @@ const auth = require('../middlewares/auth')
 router.post('/create', auth.moderator, catchErrors(gameController.create))
 router.post('/modify', auth.moderator, catchErrors(gameController.modify))
 router.post('/delete', auth.moderator, catchErrors(gameController.delete))
-router.get('/details_by_id/:game_id', catchErrors(gameController.getOne))
+router.get('/details/:_gameid', catchErrors(gameController.getOne))
+
+router.post('/search', catchErrors(gameController.searchByName))
 
 module.exports = router

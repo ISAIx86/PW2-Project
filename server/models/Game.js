@@ -44,7 +44,8 @@ const game_schema = new mongoose.Schema({
     },
     classification: {
         type: mongoose.Types.ObjectId,
-        required: 'El juego debe estar clasificado.'
+        required: 'El juego debe estar clasificado.',
+        ref: 'clasificaciones'
     },
     genre: {
         type: [mongoose.Types.ObjectId],
@@ -52,7 +53,7 @@ const game_schema = new mongoose.Schema({
             validator: v => Array.isArray(v) & v.length > 0,
             message: 'El juego debe tener al menos un género asociado.'
         },
-        ref: 'clasificaciones',
+        ref: 'generos',
         required: 'El juego debe tener al menos un género asociado.'
     },
     developers: {
@@ -76,6 +77,10 @@ const game_schema = new mongoose.Schema({
     followers: {
         type: [mongoose.Types.ObjectId],
         ref: 'usuarios'
+    },
+    release_date: {
+        type: Date,
+        required: 'La fecha de lanzamiento es requerida.'
     },
     created_by: {
         type: mongoose.Types.ObjectId,

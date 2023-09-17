@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Developer = mongoose.model('desarrolladores')
 
+// Create
 exports.create = async (req, res) => {
 
     const {
@@ -20,6 +21,7 @@ exports.create = async (req, res) => {
 
 }
 
+// Updates
 exports.modify = async (req, res) => {
 
     const {
@@ -35,7 +37,7 @@ exports.modify = async (req, res) => {
     if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
 
     dev.set({
-        title
+        title: typeof title !== 'undefined' ? title : dev.title
     })
 
     await dev.save()

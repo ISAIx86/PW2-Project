@@ -1,24 +1,26 @@
 const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
 
+// Create
 exports.create = async (req, res) => {
 
     const {
         name_id,
         title,
         descrip,
+        release_date,
         classification,
         genre,
         developers,
         platforms
     } = req.body
-
     const id = req.payload.id
 
     const game = new Game({
         name_id,
         title,
         descrip,
+        release_date,
         classification,
         genre,
         developers,
@@ -44,6 +46,7 @@ exports.create = async (req, res) => {
 
 }
 
+// Updates
 exports.modify = async (req, res) => {
 
     const {
@@ -51,6 +54,7 @@ exports.modify = async (req, res) => {
         name_id,
         title,
         descrip,
+        release_date,
         classification,
         genre,
         developers,
@@ -64,13 +68,14 @@ exports.modify = async (req, res) => {
     if (!game) throw "No se pudo encontrar un juego con este ID."
 
     game.set({
-        name_id,
-        title,
-        descrip,
-        classification,
-        genre,
-        developers,
-        platforms
+        name_id: typeof name_id !== 'undefined' ? name_id : game.name_id,
+        title: typeof title !== 'undefined' ? title : game.title,
+        descrip: typeof descrip !== 'undefined' && descrip !== '' ? descrip : game.descrip,
+        release_date: typeof release_date !== 'undefined' ? release_date : game.release_date,
+        classification: typeof classification !== 'undefined' ? classification : game.classification,
+        genre: typeof genre !== 'undefined' ? genre : game.genre,
+        developers: typeof developers !== 'undefined' ? developers : game.developers,
+        platforms: typeof platforms !== 'undefined' ? platforms : game.platforms
     })
 
     await game.validate(['name_id'])
@@ -78,7 +83,6 @@ exports.modify = async (req, res) => {
     // SUBIR NUEVA IMAGEN DE JUEGO
     if (req.files && req.files.image)
         await game.uploadImage('title', req.files.image)
-
     // SUBIR NUEVA PORTADA DE JUEGO
     if (req.files && req.files.cover)
         await game.uploadImage('cover', req.files.cover)
@@ -86,7 +90,7 @@ exports.modify = async (req, res) => {
     await game.save()
 
     res.json({
-        message: "Juego agregado exitosamente!"
+        message: "Juego modificado exitosamente!"
     })
 
 }
@@ -109,20 +113,55 @@ exports.delete = async (req, res) => {
 
 }
 
+// Queries
 exports.getOne = async (req, res) => {
 
-    const name_id = req.params.game_id
+    const name_id = req.params._gameid
 
-    const game = await Game.findOne({
-        name_id,
-        is_deleted: false
-    })
+    const game = await Game
+        .findOne(
+            {name_id, is_deleted: false},
+            {
+                image: 1,
+                cover: 1,
+                title: 1,
+                rating: 1,
+                followers: {$size: '$followers'},
+                release_date: '$release_date',
+                developers: 1,
+                platforms: 1,
+                genre: 1,
+                descrip: 1,
+                classification: 1
+            }
+        )
+        .populate('developers', 'title -_id')
+        .populate('platforms', 'title -_id')
+        .populate('genre', 'title -_id')
+        .populate('classification', 'title image -_id')
 
     if (!game) throw "Juego no encontrado :C"
 
     res.json({
         message: "Lo tengo! Aquí está",
-        juego: game
+        result: game
+    })
+
+}
+
+exports.searchByName = async (req, res) => {
+
+    const { text_input } = req.body
+
+    const qry_results = await Game
+        .find(
+            {title: {$regex: `.*${text_input}.*`}},
+            {image:1, name_id:1, title:1, developers:1, year:{$year: "$release_date"}}
+        )
+        .populate('developers', 'title -_id')
+    
+    res.json({
+        results: qry_results
     })
 
 }

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Platform = mongoose.model('plataformas')
 
+// Create
 exports.create = async (req, res) => {
 
     const {
@@ -20,6 +21,7 @@ exports.create = async (req, res) => {
 
 }
 
+// Updates
 exports.modify = async (req, res) => {
 
     const {
@@ -35,7 +37,7 @@ exports.modify = async (req, res) => {
     if (!plat) throw "No se pudo encontrar una plataforma con este ID"
 
     plat.set({
-        title
+        title: typeof title !== 'undefined' ? title : plat.title
     })
 
     await plat.save()
