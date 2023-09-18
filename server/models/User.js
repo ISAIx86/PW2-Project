@@ -82,7 +82,7 @@ const user_schema = new mongoose.Schema({
         type: [mongoose.Types.ObjectId],
         ref: 'juegos'
     },
-    followed: {
+    followers: {
         type: [mongoose.Types.ObjectId],
         ref: 'usuarios'
     },

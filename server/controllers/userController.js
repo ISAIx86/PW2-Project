@@ -145,6 +145,123 @@ exports.closeProfile = async (req, res) => {
 
 }
 
+exports.follow = async (req, res) => {
+
+    const { target_id } = req.body
+    const id = req.payload.id
+
+    if (target_id === id) throw "No puedes seguirte a tí mismo."
+
+    const target_user = await User
+        .findOne({_id: target_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!target_user) throw "El usuario que busca seguir no se pudo encontrar."
+
+    if (target_user.is_private) {
+        if (target_user.followers.includes(user.id)) throw "Ya sigues a este usuario."
+        if (user.following.includes(target_user.id)) throw "Ya sigues a este usuario."
+        if (!target_user.requests.includes(user.id))
+            await User.updateOne(
+                {_id: target_user.id},
+                {$push: {requests: user.id}}
+            )
+    } else {
+        if (!target_user.followers.includes(user.id))
+            await User.updateOne(
+                {_id: target_user.id},
+                {$push: {followers: user.id}}
+            )
+        if (target_user.requests.includes(user.id))
+            await User.updateOne(
+                {_id: target_user.id},
+                {$pull: {requests: user.id}}
+            )
+        if (!user.following.includes(target_user.id))
+            await User.updateOne(
+                {_id: user.id},
+                {$push: {following: target_user.id}}
+            )
+        if (target_user.followers.includes(user.id)) throw "Ya sigues a este usuario."
+        if (user.following.includes(target_user.id)) throw "Ya sigues a este usuario."
+    }
+
+    res.json({
+        message: target_user.is_private ? "Solicitud de seguimiento enviada." : "Seguimiento exitoso."
+    })
+
+}
+
+exports.acceptFollower = async (req, res) => {
+
+    const { req_id } = req.body
+    const id = req.payload.id
+
+    if (req_id === id) throw "No puedes seguirte a ti mismo"
+
+    const requester = await User
+        .findOne({_id: req_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!requester) throw "No se pudo encontrar el usuario de la petición."
+    
+    if (!user.requests.includes(requester.id)) throw "No se pudo encontrar el usuario en la lista de peticiones."
+    if (!user.followers.includes(requester.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$push: {followers: requester.id}}
+        )
+    if (user.requests.includes(requester.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$pull: {requests: requester.id}}
+        )
+    if (!requester.following.includes(user.id))
+        await User.updateOne(
+            {_id: requester.id},
+            {$push: {following: user.id}}
+        )
+
+    res.json({
+        message: 'Petición aceptada exitosamente.'
+    })
+
+}
+
+exports.unfollow = async (req, res) => {
+
+    const { target_id } = req.body
+    const id = req.payload.id
+
+    const target_user = await User
+        .findOne({_id: target_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!target_user) throw "El usuario que busca seguir no se pudo encontrar."
+
+    if (target_user.followers.includes(user.id))
+        await User.updateOne(
+            {_id: target_user.id},
+            {$pull: {followers: user.id}}
+        )
+    if (user.following.includes(target_user.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$pull: {following: target_user.id}}
+        )
+
+    if (!target_user.followers.includes(user.id)) throw "No sigues a este usuario."
+    if (!user.following.includes(target_user.id)) throw "No sigues a este usuario."
+
+    res.json({
+        message: "Se dejó de seguir al usuario."
+    })
+
+}
+
 // Queries
 exports.login = async (req, res) => {
 

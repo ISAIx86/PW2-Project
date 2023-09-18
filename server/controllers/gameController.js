@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
+const User = mongoose.model('usuarios')
 
 // Create
 exports.create = async (req, res) => {
@@ -109,6 +110,70 @@ exports.delete = async (req, res) => {
 
     res.json({
         message: "Juego eliminado exitosamente!"
+    })
+
+}
+
+exports.follow = async (req, res) => {
+
+    const { target_id } = req.body
+    const id = req.payload.id
+
+    const game = await Game
+        .findOne({_id: target_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw "No se pudo encontrar un usuario con este ID."
+    if (!game) throw "No se pudo encontrar un juego con este ID."
+
+    if (!game.followers.includes(user.id))
+        await Game.updateOne(
+            {_id: game.id},
+            {$push: {followers: user.id}}
+        )
+    if (!user.following_games.includes(game.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$push: {following_games: game.id}}
+        )
+
+    if (user.following_games.includes(game.id)) throw "Ya sigues este juego."
+    if (game.followers.includes(user.id)) throw "Ya sigues este juego."
+
+    res.json({
+        message: 'Seguimiento de juego exitoso.'
+    })
+
+}
+
+exports.unfollow = async (req, res) => {
+
+    const { target_id } = req.body
+    const id = req.payload.id
+
+    const game = await Game
+        .findOne({_id: target_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw "No se pudo encontrar un usuario con este ID."
+    if (!game) throw "No se pudo encontrar un juego con este ID."
+
+    if (game.followers.includes(user.id))
+        await Game.updateOne(
+            {_id: game.id},
+            {$pull: {followers: user.id}}
+        )
+    if (user.following_games.includes(game.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$pull: {following_games: game.id}}
+        )
+
+    if (!user.following_games.includes(game.id)) throw "No sigues este juego."
+    if (!game.followers.includes(user.id)) throw "No sigues este juego."
+
+    res.json({
+        message: 'Juego eliminado de tus juegos seguidos.'
     })
 
 }
