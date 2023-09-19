@@ -182,6 +182,7 @@ exports.unfollow = async (req, res) => {
 exports.getOne = async (req, res) => {
 
     const name_id = req.params._gameid
+    const id = req.payload.id
 
     const game = await Game
         .findOne(
@@ -197,7 +198,8 @@ exports.getOne = async (req, res) => {
                 platforms: 1,
                 genre: 1,
                 descrip: 1,
-                classification: 1
+                classification: 1,
+                is_following: {$in: [{$toObjectId: id}, "$followers"]}
             }
         )
         .populate('developers', 'title -_id')
@@ -217,16 +219,20 @@ exports.getOne = async (req, res) => {
 exports.searchByName = async (req, res) => {
 
     const { text_input } = req.body
+    const id = req.payload.id
 
-    const qry_results = await Game
+    const results = await Game
         .find(
             {title: {$regex: `.*${text_input}.*`}},
-            {image:1, name_id:1, title:1, developers:1, year:{$year: "$release_date"}}
+            {
+                image:1, name_id:1, title:1, developers:1, year:{$year: "$release_date"},
+                is_following: {$in: [{$toObjectId: id}, "$followers"]}
+            }
         )
         .populate('developers', 'title -_id')
     
     res.json({
-        results: qry_results
+        results
     })
 
 }

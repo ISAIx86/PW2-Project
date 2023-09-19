@@ -6,10 +6,10 @@ const auth = require('../middlewares/auth')
 router.post('/create', auth.moderator, catchErrors(gameController.create))
 router.post('/modify', auth.moderator, catchErrors(gameController.modify))
 router.post('/delete', auth.moderator, catchErrors(gameController.delete))
-router.get('/details/:_gameid', catchErrors(gameController.getOne))
+router.get('/details/:_gameid', auth.user, catchErrors(gameController.getOne))
 router.post('/follow', auth.user, catchErrors(gameController.follow))
 router.post('/unfollow', auth.user, catchErrors(gameController.unfollow))
 
-router.post('/search', catchErrors(gameController.searchByName))
+router.post('/search', auth.user, catchErrors(gameController.searchByName))
 
 module.exports = router

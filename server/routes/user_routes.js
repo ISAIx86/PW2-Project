@@ -13,6 +13,7 @@ router.post('/follow', auth.user, catchErrors(userController.follow))
 router.post('/accept_follower', auth.user, catchErrors(userController.acceptFollower))
 router.post('/unfollow', auth.user, catchErrors(userController.unfollow))
 
+router.get('/requests', auth.user, catchErrors(userController.requests))
 router.get('/profile/:_username?', auth.user, catchErrors(userController.profile))
 router.post('/search/username', auth.user, catchErrors(userController.searchUsername))
 

@@ -312,28 +312,29 @@ exports.loginMod = async (req, res) => {
 
 exports.profile = async (req, res) => {
 
-    const username = req.params._username
+    const { _username } = req.params
     const id = req.payload.id
 
     let filters = null
-    if (typeof username === 'undefined') 
+    if (typeof _username === 'undefined') 
         filters = {_id: id, is_deleted: false}
     else
-        filters = {username, is_deleted: false}
+        filters = {_username, is_deleted: false}
     
     const result = await User
         .findOne(
             filters,
             {
                 image: 1,
-                username: 1,
+                _username: 1,
                 descrip: 1,
                 is_private: 1,
+                is_following: {$in: [{$toObjectId: id},'$followers']},
                 nombres: {$cond: [
                     {$or: [
                         {$eq: ['$_id', {$toObjectId: id}]},
                         {$ne: ['$is_private', true]},
-                        {$eq: [typeof username, 'undefined']}
+                        {$eq: [typeof _username, 'undefined']}
                     ]},
                     '$nombres', '$$REMOVE'
                 ]},
@@ -341,7 +342,7 @@ exports.profile = async (req, res) => {
                     {$or: [
                         {$eq: ['$_id', {$toObjectId: id}]},
                         {$ne: ['$is_private', true]},
-                        {$eq: [typeof username, 'undefined']}
+                        {$eq: [typeof _username, 'undefined']}
                     ]},
                     '$apellidos', '$$REMOVE'
                 ]}
@@ -359,15 +360,37 @@ exports.profile = async (req, res) => {
 exports.searchUsername = async (req, res) => {
 
     const { text_input } = req.body
+    const id = req.payload.id
 
     const results = await User
         .find(
             {username: {$regex: `.*${text_input}.*`}},
-            {image:1, username:1, descrip:1}
+            {
+                image:1, username:1, descrip:1,
+                is_following: {$in: [{$toObjectId: id}, "$followers"]}
+            }
         )
 
     res.json({
         results
+    })
+
+}
+
+exports.requests = async (req, res) => {
+
+    const id = req.payload.id
+
+    const user = await User
+        .findOne(
+            {_id: id, is_deleted: false},
+            {requests:1}
+        )
+        .populate('requests', 'image username descrip')
+    if (!user) throw "No se pudo encontrar el usuario con este ID."
+
+    res.json({
+        results: user.requests
     })
 
 }

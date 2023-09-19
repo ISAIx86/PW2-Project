@@ -82,14 +82,41 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   email: Correo electrónico del usuario. Requerido.
     -   password: Contraseña del usuario. Requerido.
 
-7. Search by Username
+7. Follow
+    Método: POST
+    URL: http://localhost:5000/user/follow
+    Seguir a otro usuario o dejar solicitud de seguimiento.
+    Formulario:
+    -   target_id: ID del usuario al que se quiere seguir.
+
+8. Accept Follow
+    Método: POST
+    URL: http://localhost:5000/user/accept_follower
+    Aceptar petición de seguimiento.
+    Formulario:
+    -   req_id: ID del usuario al que se quiere aceptar su solicitud.
+
+9. Requests
+    Método: GET
+    URL: http://localhost:5000/user/requests
+    Obtiene la lista de solicitudes de seguimiento del usuario.
+    - SIN PARÁMETROS -
+
+10. Unfollow
+    Método: POST
+    URL: http://localhost:5000/user/unfollow
+    Dejar de seguir a un usuario.
+    Formulario:
+    -   target_id: ID del usuario al que se quiere dejar de seguir.
+
+11. Search by Username
     Método: POST
     URL: http://localhost:5000/user/search/username
     Busca usuarios aproximados a la coincidencia.
     Formulario:
     -   text_input: Entrada de la barra de búsqueda. Requerido.
 
-8. Perfil
+12. Perfil
     Método: GET
     URL: http://localhost:5000/user/profile/:_username?
     Obtiene información de perfil de un usuario.
