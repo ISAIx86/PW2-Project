@@ -210,7 +210,6 @@ exports.getOne = async (req, res) => {
     if (!game) throw "Juego no encontrado :C"
 
     res.json({
-        message: "Lo tengo! Aquí está",
         result: game
     })
 
@@ -223,7 +222,7 @@ exports.searchByName = async (req, res) => {
 
     const results = await Game
         .find(
-            {title: {$regex: `.*${text_input}.*`}},
+            {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
             {
                 image:1, name_id:1, title:1, developers:1, year:{$year: "$release_date"},
                 is_following: {$in: [{$toObjectId: id}, "$followers"]}

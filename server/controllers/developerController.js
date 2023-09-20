@@ -67,3 +67,38 @@ exports.delete = async (req, res) => {
     })
     
 }
+
+// Queries
+exports.searchByTitle = async (req, res) => {
+
+    const { text_input } = req.body
+    
+    const results = await Developer
+        .find(
+            {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
+            {title: 1}
+        )
+
+    res.json({
+        results
+    })
+
+}
+
+exports.getById = async (req, res) => {
+
+    const _dev_id = req.params._dev_id
+
+    const result = await Developer
+        .find(
+            {_id: _dev_id, is_deleted: false},
+            {title: 1, created_by: 1}
+        )
+        .populate('created_by', 'image username')
+    if (!result) throw  "No se pudo encontrar un desarrollador con este ID."
+
+    res.json({
+        result
+    })
+
+}

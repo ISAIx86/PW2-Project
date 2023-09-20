@@ -48,6 +48,9 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   nombres: Nombres del usuario. Opcional.
     -   apellidos: Apellidos del usuario. Opcional.
     -   username: Nombre de usuario único. Opcional.
+    -   descrip: Texto de descripción del usuario. Opcional.
+    -   privacy: Configuración de privacidad del usuario. Opcional.
+    -   default_img: Desactiva la imagen de perfil y coloca la imagen por defecto. Opcional
     -   fecha_nac: Fecha de nacimiento del usuario. Opcional.
     -   email: Correo electrónico del usuario. Opcional.
 
@@ -135,6 +138,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   descrip: Sinopsis o descripción del videojuego. Requerido.
     -   image: Imagen de título del videojuego. Requerido.
     -   cover: Imagen de portada del videojuego. Requerido.
+    -   release_date: Fecha de lanzamiento del videojuego. Requerido.
     -   classification: Clasificación de contenido de la ESRB. Requerido.
     -   genre: Géneros asociados al juego. Requerido.
     -   developers: Desarrolladores que crearon el juego. Requerido.
@@ -151,6 +155,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   descrip: Sinopsis o descripción del videojuego. Opcional.
     -   image: Imagen de título del videojuego. Opcional.
     -   cover: Imagen de portada del videojuego. Opcional.
+    -   release_date: Fecha de lanzamiento del videojuego. Opcional.
     -   classification: Clasificación de contenido de la ESRB. Opcional.
     -   genre: Géneros asociados al juego. Opcional.
     -   developers: Desarrolladores que crearon el juego. Opcional.
@@ -163,18 +168,32 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Formulario:
     -   id: ID del videojuego a modificar. Requerido.
 
-4. GetOne
+4. Follow
+    Método: POST
+    URL: http://localhost:5000/games/follow
+    El usuario sigue un videojuego.
+    Formulario:
+    -   target_id: ID del videojuego que el usuario desea seguir. Requerido.
+
+5. Unfollow
+    Método: POST
+    URL: http://localhost:5000/games/unfollow
+    El usuario deja de seguir un videojuego.
+    Formulario:
+    -   target_id: ID del videojuego que se quiere dejar de seguir. Requerido.
+
+6. GetOne
     Método: GET
-    URL: http://localhost:5000/games/details/:game_id
+    URL: http://localhost:5000/games/details/:_game_id
     Consulta información de un videojuego.
     Parámetros:
     -   _game_id: Código de nombre.
 
-5. Search by Title
+7. Search by Title
     Método: POST
     URL: http://localhost:5000/games/search
     Busca videojuegos que coincidan con la búsqueda.
-    Parámetros:
+    Formulario:
     -   text_input: Entrada de la barra de búsqueda. Requerido.
 
 ## Clasificaciones
@@ -203,6 +222,20 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Formulario:
     -   id: ID de la clasificación. Requerido.
 
+4. Search by Title
+    Método: POST
+    URL: http://localhost:5000/classification/search
+    Busca clasificaciones por nombre.
+    Formulario:
+    -   text_input: Texto para buscar. Requerido.
+
+5. Get by ID
+    Método: GET
+    URL: http://localhost:5000/classification/:_class_id
+    Busca una clasificación por su ID.
+    Parámetros:
+    -   _class_id: ID de la clase a obtener. Requerido.
+
 ## Desarrolladores
 
 1. Create
@@ -226,6 +259,20 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Elimina una desarrolladora.
     Formulario:
     -   id: ID de la desarrolladora. Requerido.
+
+4. Search by Title
+    Método: POST
+    URL: http://localhost:5000/developer/search
+    Busca desarrolladores por nombre.
+    Formulario:
+    -   text_input: Texto para buscar. Requerido.
+
+5. Get by ID
+    Método: GET
+    URL: http://localhost:5000/developer/:_dev_id
+    Busca un desarrollador por su ID.
+    Parámetros:
+    -   _dev_id: ID del desarrollador a obtener. Requerido.
 
 ## Géneros
 
@@ -251,6 +298,20 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Formulario:
     -   id: ID del género. Requerido.
 
+4. Search by Title
+    Método: POST
+    URL: http://localhost:5000/genre/search
+    Busca géneros por nombre.
+    Formulario:
+    -   text_input: Texto para buscar. Requerido.
+
+5. Get by ID
+    Método: GET
+    URL: http://localhost:5000/genre/:_genre_id
+    Busca un género por su ID.
+    Parámetros:
+    -   _genre_id: ID del género a obtener. Requerido.
+
 ## Plataformas
 
 1. Create
@@ -274,3 +335,17 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Elimina una plataforma.
     Formulario:
     -   id: ID de la plataforma. Requerido.
+
+4. Search by Title
+    Método: POST
+    URL: http://localhost:5000/platform/search
+    Busca plataformas por nombre.
+    Formulario:
+    -   text_input: Texto para buscar. Requerido.
+
+5. Get by ID
+    Método: GET
+    URL: http://localhost:5000/platform/:_plat_id
+    Busca una plataforma por su ID.
+    Parámetros:
+    -   _plat_id: ID de la plataforma a obtener. Requerido.

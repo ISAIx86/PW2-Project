@@ -364,7 +364,7 @@ exports.searchUsername = async (req, res) => {
 
     const results = await User
         .find(
-            {username: {$regex: `.*${text_input}.*`}},
+            {username: {$regex: `.*${text_input}.*`}, is_deleted: false},
             {
                 image:1, username:1, descrip:1,
                 is_following: {$in: [{$toObjectId: id}, "$followers"]}

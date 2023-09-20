@@ -7,4 +7,7 @@ router.post('/create', auth.moderator, catchErrors(classificationController.crea
 router.post('/modify', auth.moderator, catchErrors(classificationController.modify))
 router.post('/delete', auth.moderator, catchErrors(classificationController.delete))
 
+router.post('/search', auth.moderator, catchErrors(classificationController.searchByTitle))
+router.get('/:_class_id', auth.moderator, catchErrors(classificationController.getById))
+
 module.exports = router

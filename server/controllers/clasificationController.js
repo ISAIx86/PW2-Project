@@ -73,3 +73,38 @@ exports.delete = async (req, res) => {
     })
 
 }
+
+// Queries
+exports.searchByTitle = async (req, res) => {
+
+    const { text_input } = req.body
+    
+    const results = await Classification
+        .find(
+            {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
+            {image:1, title:1}
+        )
+
+    res.json({
+        results
+    })
+
+}
+
+exports.getById = async (req, res) => {
+
+    const _class_id = req.params._class_id
+
+    const result = await Classification
+        .find(
+            {_id: _class_id, is_deleted: false},
+            {title: 1, image: 1, created_by: 1}
+        )
+        .populate('created_by', 'image username')
+    if (!result) throw  "No se pudo encontrar una clasificación con este ID."
+
+    res.json({
+        result
+    })
+
+}
