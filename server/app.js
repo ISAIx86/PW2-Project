@@ -21,6 +21,8 @@ app.use('/developer', require('./routes/developer_routes'))
 app.use('/genre', require('./routes/genre_routes'))
 app.use('/platform', require('./routes/platform_routes'))
 app.use('/games', require('./routes/game_routes'))
+app.use('/review', require('./routes/review_routes'))
+app.use('/post', require('./routes/post_routes'))
 
 // Configurar Handlers de errores en este apartado
 const errorHandlers = require('./handlers/errorHandler')

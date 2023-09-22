@@ -20,6 +20,13 @@ const review_schema = new mongoose.Schema({
     },
     author: {
         type: mongoose.Types.ObjectId,
+        validate: {
+            validator: async function (v) {
+                const result = await this.constructor.findOne({_id: {$ne: this.id}, is_deleted: false, author: v})
+                return !result
+            },
+            message: 'Ya has reseñado este juego.'
+        },
         ref: 'usuarios',
         required: 'La reseña debe tener un autor.'
     },

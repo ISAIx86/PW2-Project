@@ -11,6 +11,7 @@ const config = {
     },
     directories: {
         user_images: "storage/users_images",
+        multimedia: "storage/multimedia",
         esrb_logos: "resources/esrb_classifications",
         game_covers: "resources/game_covers",
         game_images: "resources/game_images"
