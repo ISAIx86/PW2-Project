@@ -66,7 +66,16 @@ exports.create = async (req, res) => {
 exports.getByGame = async (req, res) => {
 
     const { _game_id } = req.params
+    let { page, elem_per_page } = req.query
     const id = req.payload.id
+
+    page = Math.floor(typeof page !== 'undefined' & page !== '' ? page : 1)
+    elem_per_page = Math.floor(typeof elem_per_page !== 'undefined' & elem_per_page !== '' ? elem_per_page : 10)
+
+    if (page <= 0) page = 1
+    if (elem_per_page < 10) elem_per_page = 10
+
+    const offset = ((page - 1) * elem_per_page)
 
     const game = await Game.findOne({name_id: _game_id, is_deleted: false})
     if (!game) throw "No se pudo encontrar un juego con este código de nombre."
@@ -102,6 +111,8 @@ exports.getByGame = async (req, res) => {
             }
         }}
     ])
+    .skip(offset)
+    .limit(elem_per_page)
 
     res.json({
         results

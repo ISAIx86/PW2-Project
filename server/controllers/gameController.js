@@ -181,7 +181,7 @@ exports.unfollow = async (req, res) => {
 // Queries
 exports.getOne = async (req, res) => {
 
-    const name_id = req.params._gameid
+    const name_id = req.params._game_id
     const id = req.payload.id
 
     const game = await Game
