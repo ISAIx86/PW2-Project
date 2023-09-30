@@ -16,7 +16,7 @@ const game_schema = new mongoose.Schema({
                 message: 'Ya existe un juego con este código de nombre.'
             },
             {
-                validator: v => Regex.usernames.test(v),
+                validator: v => Regex.game_nid.test(v),
                 message: 'El código de nombre no tiene formato correcto.'
             }
         ],

@@ -38,4 +38,4 @@ multimedia_schema.methods.upload = async function upload(post_id, index, multim)
 
 }
 
-module.exports = mongoose.model('multimedia', multimedia_schema)
+module.exports = mongoose.model('multimedias', multimedia_schema)

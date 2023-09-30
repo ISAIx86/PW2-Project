@@ -85,9 +85,10 @@ exports.getByGame = async (req, res) => {
             as: 'author'
         }}, {$unwind: '$author'},
         {$match:{
+            'game': game._id,
             'article.is_deleted': false
         }},
-        {$project:{
+        {$project: {
             _id: 1,
             user_card: {
                 image: '$author.image',

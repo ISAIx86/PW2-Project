@@ -20,7 +20,7 @@ const post_schema = new mongoose.Schema({
     },
     multimedia: {
         type: [mongoose.Types.ObjectId],
-        ref: 'multimedia'
+        ref: 'multimedias'
     }
 })
 

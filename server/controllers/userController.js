@@ -319,7 +319,7 @@ exports.profile = async (req, res) => {
     if (typeof _username === 'undefined') 
         filters = {_id: id, is_deleted: false}
     else
-        filters = {_username, is_deleted: false}
+        filters = {username: _username, is_deleted: false}
     
     const result = await User
         .findOne(

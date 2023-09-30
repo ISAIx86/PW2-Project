@@ -152,9 +152,9 @@ exports.unfollow = async (req, res) => {
     const id = req.payload.id
 
     const game = await Game
-        .findOne({_id: target_id, is_deleted: false})
+        .findOne({_id: target_id})
     const user = await User
-        .findOne({_id: id, is_deleted: false})
+        .findOne({_id: id})
     if (!user) throw "No se pudo encontrar un usuario con este ID."
     if (!game) throw "No se pudo encontrar un juego con este ID."
 
