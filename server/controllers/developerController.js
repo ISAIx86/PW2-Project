@@ -25,12 +25,12 @@ exports.create = async (req, res) => {
 exports.modify = async (req, res) => {
 
     const {
-        id,
+        devID,
         title
     } = req.body
 
     const dev = await Developer.findOne({
-        _id: id,
+        _id: devID,
         is_deleted: false
     })
 
@@ -50,9 +50,9 @@ exports.modify = async (req, res) => {
 
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { devID } = req.body
 
-    const dev = await Developer.findById(id)
+    const dev = await Developer.findById(devID)
 
     if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
 

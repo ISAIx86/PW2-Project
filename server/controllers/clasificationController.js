@@ -28,12 +28,12 @@ exports.create = async (req, res) => {
 exports.modify = async (req, res) => {
 
     const {
-        id,
+        clID,
         title
     } = req.body
 
     const curr_class = await Classification.findOne({
-        _id: id,
+        _id: clID,
         is_deleted: false
     })
 
@@ -56,9 +56,9 @@ exports.modify = async (req, res) => {
 
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { clID } = req.body
 
-    const curr_class = await Classification.findById(id)
+    const curr_class = await Classification.findById(clID)
 
     if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
 

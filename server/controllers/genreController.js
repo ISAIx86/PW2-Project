@@ -25,12 +25,12 @@ exports.create = async (req, res) => {
 exports.modify = async (req, res) => {
 
     const {
-        id,
+        genID,
         title
     } = req.body
 
     const genre = await Genre.findOne({
-        _id: id,
+        _id: genID,
         is_deleted: false
     })
 
@@ -50,9 +50,9 @@ exports.modify = async (req, res) => {
 
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { genID } = req.body
 
-    const genre = await Genre.findById(id)
+    const genre = await Genre.findById(genID)
 
     if (!genre) throw "No se pudo encontrar un género con este ID."
 

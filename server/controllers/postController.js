@@ -60,13 +60,14 @@ exports.create = async (req, res) => {
 // Updates
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { postID } = req.body
+    const id = req.payload.id
 
-    const article = await Article.find({_id: id, is_deleted: false, article_type: 'post'})
+    const article = await Article.find({_id: postID, is_deleted: false, article_type: 'post'})
     if (!article) throw "No se encontró una publicación con este ID"
 
     const post = await Post.find({_id: article.id})
-    if (post.author !== req.payload.id) throw "No eres autor de esta publicación."
+    if (post.author !== id) throw "No eres autor de esta publicación."
 
     article.set({
         is_deleted: true
@@ -85,6 +86,7 @@ exports.getByUser = async (req, res) => {
 
     const { _username } = req.params
     let { page, elem_per_page } = req.query
+    const id = req.payload.id
 
     page = Math.floor(typeof page !== 'undefined' & page !== '' ? page : 1)
     elem_per_page = Math.floor(typeof elem_per_page !== 'undefined' & elem_per_page !== '' ? elem_per_page : 10)
@@ -96,6 +98,8 @@ exports.getByUser = async (req, res) => {
 
     const user = await User.findOne({username: _username, is_deleted: false})
     if (!user) throw "No se encontró el usuario."
+
+    if (user.is_private) throw "Esta cuenta es privada."
 
     const results = await Post
         .aggregate([
@@ -150,11 +154,13 @@ exports.getByUser = async (req, res) => {
                 },
                 article_details: {
                     publish_datetime: '$article.publish_datetime',
-                    you_like: {$in: [{$toObjectId: user.id}, '$article.users_likes']},
+                    you_like: {$in: [{$toObjectId: id}, '$article.users_likes']},
                     likes: {$size: '$article.users_likes'}
                 }
             }}
         ])
+        .skip(offset)
+        .limit(elem_per_page)
 
     res.json({
         results

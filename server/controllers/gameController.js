@@ -51,7 +51,7 @@ exports.create = async (req, res) => {
 exports.modify = async (req, res) => {
 
     const {
-        id,
+        gameID,
         name_id,
         title,
         descrip,
@@ -63,7 +63,7 @@ exports.modify = async (req, res) => {
     } = req.body
 
     const game = await Game.findOne({
-        _id: id,
+        _id: gameID,
         is_deleted: false
     })
     if (!game) throw "No se pudo encontrar un juego con este ID."
@@ -98,9 +98,9 @@ exports.modify = async (req, res) => {
 
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { gameID } = req.body
 
-    const game = await Game.findById(id)
+    const game = await Game.findById(gameID)
 
     game.set({
         is_deleted: true

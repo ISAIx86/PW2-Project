@@ -25,12 +25,12 @@ exports.create = async (req, res) => {
 exports.modify = async (req, res) => {
 
     const {
-        id,
+        platID,
         title
     } = req.body
 
     const plat = await Platform.findOne({
-        _id: id,
+        _id: platID,
         is_deleted: false
     })
 
@@ -50,9 +50,9 @@ exports.modify = async (req, res) => {
 
 exports.delete = async (req, res) => {
 
-    const { id } = req.body
+    const { platID } = req.body
 
-    const plat = await Platform.findById(id)
+    const plat = await Platform.findById(platID)
 
     if (!plat) throw "No se pudo encontrar una plataforma con este ID."
 
