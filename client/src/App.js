@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-import Index from './IndexPage'
-import Login from './Login'
-import Register from './Register'
+import Index from './pages/IndexPage'
+import Login from './pages/LoginPage'
+import Register from './pages/RegisterPage'
 
-import './App.css'
+import './styles/App.css'
 
 function App() {
 	return (

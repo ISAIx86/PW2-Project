@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import makeToast from '../src/plugins/Toaster'
+import makeToast from '../plugins/Toaster'
 
 import 'bootstrap/dist/css/bootstrap.css'
-import './login.css'
+import '../styles/login.css'
 
 function Login() {
 

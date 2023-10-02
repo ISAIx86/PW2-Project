@@ -2,10 +2,10 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'react-bootstrap-icons'
 import axios from 'axios'
-import makeToast from './plugins/Toaster'
+import makeToast from '../plugins/Toaster'
 
 import 'bootstrap/dist/css/bootstrap.css'
-import './login.css'
+import '../styles/login.css'
 
 function Icono() {
   return (
