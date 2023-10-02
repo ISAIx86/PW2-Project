@@ -1,0 +1,111 @@
+{
+    "users": {
+        "bad-name": "El nombre tiene formato no válido.",
+        "required-name": "El nombre es requerido.",
+        "bad-last": "El apellido tiene formato no válido.",
+        "required-last": "El apellido es requerido.",
+        "bad-username": "El nombre de usuario tiene formato no válido.",
+        "taken-username": "Este nombre de usuario ya fué tomado.",
+        "required-username": "El nombre de usuario es requerido.",
+        "required-dob": "La fecha de nacimiento es requerida.",
+        "bad-email": "El correo electrónico tiene formato no válido.",
+        "taken-email": "Ya existe un usuario con este correo.",
+        "required-email": "El correo es requierido.",
+        "required-password": "La contraseña es requerida.",
+
+        "wrong-password": "Correo o contraseña incorrectos.",
+        "wrong-actual-password": "La contraseña es incorrecta.",
+        "id-not-found": "No se pudo encontrar un usuario con éste ID.",
+        "not-found": "No pude encontrar a este usuario.",
+        "bad-password": "La contraseña no tiene formato no válido.",
+        "bad-new-password": "La contraseña nueva tiene formato no válido.",
+        "bad-confirmation": "La confirmación de contraseña no coincide.",
+        "follow-itself": "No puedes seguirte a tí mismo",
+        "follow-target-not-found": "El usuario que busca seguir no se pudo encontrar.",
+        "unfollow-target-not-found": "El usuario que busca dejar de seguir no se pudo encontrar.",
+        "already-follow": "Ya sigues a este usuario.",
+        "already-unfollow": "No sigues a este usuario.",
+        "requester-not-found": "No se pudo encontrar el usuario de la petición.",
+        "not-found-in-req-list": "No se pudo encontrar el usuario en la lista de peticiones.",
+        "unauthorized-mod": "No estas autorizado para acceder a las funciones de Moderador.",
+        "image-upload": "Ocurrio un error para subir la imagen",
+        "private-account": "Esta cuenta es privada."
+    },
+    "games": {
+        "taken-nameid": "Ya existe un juego con este código de nombre.",
+        "bad-nameid": "El código de nombre no tiene formato correcto.",
+        "required-nameid": "Se requiere un nombre único.",
+        "required-title": "Se requiere el título.",
+        "required-desc": "Se requiere una descripción del juego.",
+        "required-image": "Se requiere una imagen de título.",
+        "required-cover": "Se requiere una imagen de portada.",
+        "required-class": "El juego debe estar clasificado.",
+        "required-genre": "El juego debe tener al menos un género asociado.",
+        "required-dev": "El juego debe tener al menos un desarrollador asociado.",
+        "required-plat": "El juego debe tener al menos una plataforma asociada.",
+        "required-dor": "La fecha de lanzamiento es requerida.",
+        "required-author": "Se requiere un ID de creador.",
+
+        "id-not-found": "No se pudo encontrar un juego con este ID.",
+        "nameid-not-found": "No se pudo encontrar un juego con este código de nombre.",
+        "not-found": "Juego no encontrado.",
+        "already-follow": "Ya sigues este juego.",
+        "already-unfollow": "No sigues este juego."
+    },
+    "classif": {
+        "required-name": "La Clasificación requiere un nombre.",
+        "required-image": "La Clasificación requiere una imagen.",
+        "required-author": "La Clasificacción requiere el ID del autor.",
+
+        "not-found": "No se pudo encontrar una clasificación con ese ID."
+    },
+    "genre": {
+        "required-name": "El Género requiere un nombre.",
+        "required-author": "El Género requiere el ID del autor.",
+
+        "id-not-found": "No se pudo encontrar un género con este ID."
+    },
+    "platform": {
+        "required-name": "La Plataforma requiere un nombre.",
+        "required-author": "La Plataforma requiere el ID del autor.",
+
+        "id-not-found": "No se pudo encontrar una plataforma con este ID."
+    },
+    "develop": {
+        "required-name": "El Desarrollador requiere un nombre.",
+        "required-author": "El Desarrollador requiere el ID del autor.",
+
+        "not-found": ""
+    },
+    "article": {
+        "required-type": "El tipo de artículo es requerido.",
+
+        "not-found": "Este artículo no se encontró.",
+        "already-like": "Ya diste like a este artículo.",
+        "already-unlike": "No se encontró tu like a este artículo."
+    },
+    "review": {
+        "required-id": "Debe tener ID de artículo.",
+        "bad-rate": "El valor no está dentro del rango permitido.",
+        "required-rate": "La calificación es requerida.",
+        "required-content": "La reseña debe contener un texto.",
+        "already-review": "Ya has reseñado este juego.",
+        "required-author": "La reseña debe tener un autor.",
+        "required-game": "La reseña debe ser dirigida a un juego."
+    },
+    "posts": {
+        "required-id": "Debe tener ID de artículo.",
+        "required-author": "La publicación debe tener un autor.",
+
+        "id-not-found": "No se encontró la publicación con éste ID.",
+        "invalid-author": "No eres autor de esta publicación."
+    },
+    "multimedia": {
+        "required-directory": "El archivo debe tener un directorio.",
+        "required-author": "El archivo debe tener un autor."
+    },
+    "reports": {
+        "required-article": "La denuncia debe ser dirigida a un artículo.",
+        "required-author": "La denuncia debe tener un autor."
+    }
+}

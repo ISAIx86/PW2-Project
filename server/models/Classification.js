@@ -2,19 +2,20 @@ const config = require('../config')
 const uploader = require('../middlewares/uploader')
 const fs = require('fs')
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const classification_schema = new mongoose.Schema({
     title: {
         type: String,
-        required: 'La Clasificación requiere un nombre.'
+        required: errorMessages.classif['required-name']
     },
     image: {
         type: String,
-        required: 'La Clasificación requiere una imagen.'
+        required: errorMessages.classif['required-image']
     },
     created_by: {
         type: mongoose.Types.ObjectId,
-        required: 'La Clasificacción requiere el ID del autor.',
+        required: errorMessages.classif['required-author'],
         ref: 'usuarios'
     },
     is_deleted: {

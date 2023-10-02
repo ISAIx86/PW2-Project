@@ -1,22 +1,23 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const review_schema = new mongoose.Schema({
     _id: {
         type: mongoose.Types.ObjectId,
         ref: 'articulos',
-        required: 'Debe tener ID de artículo.'
+        required: errorMessages.review['required-id']
     },
     rate: {
         type: Number,
         validate: {
             validator: v => v >= 0 & v <= 5,
-            message: 'El valor no está dentro del rango permitido.'
+            message: errorMessages.review['bad-rate']
         },
-        required: 'La calificación es requerida.'
+        required: errorMessages.review['required-rate']
     },
     content: {
         type: String,
-        required: 'La reseña debe contener un texto.'
+        required: errorMessages.review['required-content']
     },
     author: {
         type: mongoose.Types.ObjectId,
@@ -25,15 +26,15 @@ const review_schema = new mongoose.Schema({
                 const result = await this.constructor.findOne({_id: {$ne: this.id}, is_deleted: false, author: v})
                 return !result
             },
-            message: 'Ya has reseñado este juego.'
+            message: errorMessages.review['already-review']
         },
         ref: 'usuarios',
-        required: 'La reseña debe tener un autor.'
+        required: errorMessages.review['required-author']
     },
     game: {
         type: mongoose.Types.ObjectId,
         ref: 'juegos',
-        required: 'La reseña debe ser dirigida a un juego.'
+        required: errorMessages.review['required-game']
     }
 })
 

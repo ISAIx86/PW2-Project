@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const report_schema = new mongoose.Schema({
     report_datetime: {
@@ -8,12 +9,12 @@ const report_schema = new mongoose.Schema({
     article: {
         type: mongoose.Types.ObjectId,
         ref: 'articulos',
-        required: 'La denuncia debe ser dirigida a un artículo.'
+        required: errorMessages.reports['required-article']
     },
     author: {
         type: mongoose.Types.ObjectId,
         ref: 'usuarios',
-        required: 'La denuncia debe tener un autor.'
+        required: errorMessages.reports['required-author']
     },
     is_deleted: {
         type: Boolean,

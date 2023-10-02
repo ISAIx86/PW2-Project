@@ -3,6 +3,8 @@ const User = mongoose.model('usuarios')
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
 const Regex = require('../handlers/regex')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.register = async (req, res) => {
@@ -28,8 +30,8 @@ exports.register = async (req, res) => {
 
     await user.validate()
 
-    if (user.password && !Regex.passwords.test(user.password)) throw "La contraseña tiene formato no válido."
-    if (user.password !== conf_password) throw "La confirmación de contraseña no coincide."
+    if (user.password && !Regex.passwords.test(user.password)) throw errorMessages.users['bad-password']
+    if (user.password !== conf_password) throw errorMessages.users['bad-confirmation']
 
     user.set({
         password: sha256(user.password + process.env.SALT)
@@ -40,9 +42,7 @@ exports.register = async (req, res) => {
 
     await user.save()
 
-    res.json({
-        message: "Ya estas registrado, " + username + ". Disftuta tu navegación!"
-    })
+    sendResponse(res, "Ya estas registrado, " + username + ". ¡Disftuta tu navegación!")
 
 }
 
@@ -65,7 +65,7 @@ exports.update = async (req, res) => {
         _id: id,
         is_deleted: false
     })
-    if (!user) throw "No se pudo encontrar un usuario con ese ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
     user.set({
         nombres: typeof nombres !== 'undefined' ? nombres : user.nombres,
@@ -86,9 +86,7 @@ exports.update = async (req, res) => {
 
     await user.save()
 
-    res.json({
-        message: "Datos actualizados."
-    })
+    sendResponse(res, "Datos actualizados.")
 
 }
 
@@ -105,11 +103,11 @@ exports.changePassword = async (req, res) => {
         _id: id,
         is_deleted: false
     })
-    if (!user) throw "No se pudo encontrar un usuario con ese ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
-    if (sha256(password + process.env.SALT) !== user.password) throw "La contraseña acutal es incorrecta."
-    if (!Regex.passwords.test(new_password)) throw "La contraseña nueva tiene formato no válido."
-    if (new_password !== conf_password) throw "La confirmación de contraseña no coincide."
+    if (sha256(password + process.env.SALT) !== user.password) throw errorMessages.users['wrong-actual-password']
+    if (!Regex.passwords.test(new_password)) throw errorMessages.users['bad-new-password']
+    if (new_password !== conf_password) throw errorMessages.users['bad-confirmation']
 
     user.set({
         password: sha256(new_password + process.env.SALT)
@@ -117,9 +115,7 @@ exports.changePassword = async (req, res) => {
 
     await user.save()
 
-    res.json({
-        message: "Contraseña actualizada exitosamente!"
-    })
+    sendResponse(res, "Contraseña actualizada exitosamente.")
 
 }
 
@@ -131,7 +127,7 @@ exports.closeProfile = async (req, res) => {
         _id: id,
         is_deleted: false
     })
-    if (!user) throw "No se pudo encontrar un usuario con ese ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
     user.set({
         is_deleted: true
@@ -139,9 +135,7 @@ exports.closeProfile = async (req, res) => {
 
     await user.save()
 
-    res.json({
-        message: "Perfil cerrado exitosamente!"
-    })
+    sendResponse(res, "Perfil cerrado exitosamente.")
 
 }
 
@@ -150,18 +144,18 @@ exports.follow = async (req, res) => {
     const { target_id } = req.body
     const id = req.payload.id
 
-    if (target_id === id) throw "No puedes seguirte a tí mismo."
+    if (target_id === id) throw errorMessages.users['follow-itself']
 
     const target_user = await User
         .findOne({_id: target_id, is_deleted: false})
     const user = await User
         .findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
-    if (!target_user) throw "El usuario que busca seguir no se pudo encontrar."
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!target_user) throw errorMessages.users['follow-target-not-found']
 
     if (target_user.is_private) {
-        if (target_user.followers.includes(user.id)) throw "Ya sigues a este usuario."
-        if (user.following.includes(target_user.id)) throw "Ya sigues a este usuario."
+        if (target_user.followers.includes(user.id)) throw errorMessages.users['already-follow']
+        if (user.following.includes(target_user.id)) throw errorMessages.users['already-follow']
         if (!target_user.requests.includes(user.id))
             await User.updateOne(
                 {_id: target_user.id},
@@ -183,13 +177,11 @@ exports.follow = async (req, res) => {
                 {_id: user.id},
                 {$push: {following: target_user.id}}
             )
-        if (target_user.followers.includes(user.id)) throw "Ya sigues a este usuario."
-        if (user.following.includes(target_user.id)) throw "Ya sigues a este usuario."
+        if (target_user.followers.includes(user.id)) throw errorMessages.users['already-follow']
+        if (user.following.includes(target_user.id)) throw errorMessages.users['already-follow']
     }
 
-    res.json({
-        message: target_user.is_private ? "Solicitud de seguimiento enviada." : "Seguimiento exitoso."
-    })
+    sendResponse(res, target_user.is_private ? "Solicitud de seguimiento enviada." : "Seguimiento exitoso.")
 
 }
 
@@ -198,16 +190,16 @@ exports.acceptFollower = async (req, res) => {
     const { req_id } = req.body
     const id = req.payload.id
 
-    if (req_id === id) throw "No puedes seguirte a ti mismo"
+    if (req_id === id) throw errorMessages.users['follow-itself']
 
     const requester = await User
         .findOne({_id: req_id, is_deleted: false})
     const user = await User
         .findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
-    if (!requester) throw "No se pudo encontrar el usuario de la petición."
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!requester) throw errorMessages.users['requester-not-found']
     
-    if (!user.requests.includes(requester.id)) throw "No se pudo encontrar el usuario en la lista de peticiones."
+    if (!user.requests.includes(requester.id)) throw errorMessages.users['not-found-in-req-list']
     if (!user.followers.includes(requester.id))
         await User.updateOne(
             {_id: user.id},
@@ -224,9 +216,7 @@ exports.acceptFollower = async (req, res) => {
             {$push: {following: user.id}}
         )
 
-    res.json({
-        message: 'Petición aceptada exitosamente.'
-    })
+    sendResponse(res, "Petición aceptada exitosamente.")
 
 }
 
@@ -239,8 +229,8 @@ exports.unfollow = async (req, res) => {
         .findOne({_id: target_id, is_deleted: false})
     const user = await User
         .findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
-    if (!target_user) throw "El usuario que busca seguir no se pudo encontrar."
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!target_user) throw errorMessages.users['unfollow-target-not-found']
 
     if (target_user.followers.includes(user.id))
         await User.updateOne(
@@ -253,12 +243,10 @@ exports.unfollow = async (req, res) => {
             {$pull: {following: target_user.id}}
         )
 
-    if (!target_user.followers.includes(user.id)) throw "No sigues a este usuario."
-    if (!user.following.includes(target_user.id)) throw "No sigues a este usuario."
+    if (!target_user.followers.includes(user.id)) throw errorMessages.users['already-unfollow']
+    if (!user.following.includes(target_user.id)) throw errorMessages.users['already-unfollow']
 
-    res.json({
-        message: "Se dejó de seguir al usuario."
-    })
+    sendResponse(res, "Se dejó de seguir al usuario.")
 
 }
 
@@ -275,14 +263,17 @@ exports.login = async (req, res) => {
         password: sha256(password + process.env.SALT),
         is_deleted: false
     })
-    if (!user) throw "Correo o contraseña incorrectos."
+    if (!user) throw errorMessages.users['wrong-password']
 
     const token = await jwt.sign({id: user.id}, process.env.SECRET)
 
-    res.json({
-        message: "Bienvenido, " + user.username,
-        token
-    })
+    sendResponse(
+        res,
+        {
+            message: "Bienvenido, " + user.username,
+            token
+        }
+    )
 
 }
 
@@ -298,15 +289,18 @@ exports.loginMod = async (req, res) => {
         password: sha256(password + process.env.SALT),
         is_deleted: false
     })
-    if (!user) throw "Correo o contraseña incorrectos."
-    if (!user.is_mod) throw "No estas autorizado para acceder a las funciones de Moderador!"
+    if (!user) throw errorMessages.users['wrong-password']
+    if (!user.is_mod) throw errorMessages.users['unauthorized-mod']
 
     const token = await jwt.sign({id: user.id}, process.env.MOD_SECRET)
 
-    res.json({
-        message: "Bienvenido, " + user.username,
-        token
-    })
+    sendResponse(
+        res,
+        {
+            message: "Bienvenido, " + user.username,
+            token
+        }
+    )
 
 }
 
@@ -348,12 +342,9 @@ exports.profile = async (req, res) => {
                 ]}
             }
         )
-    if (!result) throw "No pude encontrar a este usuario."
+    if (!result) throw errorMessages.users['not-found']
 
-    res.json({
-        message: 'Encontrado',
-        result
-    })
+    sendResponse(res, "Encontrado.")
 
 }
 
@@ -371,9 +362,7 @@ exports.searchUsername = async (req, res) => {
             }
         )
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -387,10 +376,8 @@ exports.requests = async (req, res) => {
             {requests:1}
         )
         .populate('requests', 'image username descrip')
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
-    res.json({
-        results: user.requests
-    })
+    sendResponse(res, {results: user.requests})
 
 }

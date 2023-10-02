@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -41,9 +43,7 @@ exports.create = async (req, res) => {
 
     await game.save()
 
-    res.json({
-        message: "Juego agregado exitosamente!"
-    })
+    sendResponse(res, "Juego agregado exitosamente.")
 
 }
 
@@ -66,7 +66,7 @@ exports.modify = async (req, res) => {
         _id: gameID,
         is_deleted: false
     })
-    if (!game) throw "No se pudo encontrar un juego con este ID."
+    if (!game) throw errorMessages.games['id-not-found']
 
     game.set({
         name_id: typeof name_id !== 'undefined' ? name_id : game.name_id,
@@ -90,9 +90,7 @@ exports.modify = async (req, res) => {
 
     await game.save()
 
-    res.json({
-        message: "Juego modificado exitosamente!"
-    })
+    sendResponse(res, "Juego modificado exitosamente.")
 
 }
 
@@ -108,9 +106,7 @@ exports.delete = async (req, res) => {
 
     game.save()
 
-    res.json({
-        message: "Juego eliminado exitosamente!"
-    })
+    sendResponse(res, "Juego eliminado exitosamente.")
 
 }
 
@@ -123,8 +119,8 @@ exports.follow = async (req, res) => {
         .findOne({_id: target_id, is_deleted: false})
     const user = await User
         .findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar un usuario con este ID."
-    if (!game) throw "No se pudo encontrar un juego con este ID."
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!game) throw errorMessages.games['id-not-found']
 
     if (!game.followers.includes(user.id))
         await Game.updateOne(
@@ -137,12 +133,10 @@ exports.follow = async (req, res) => {
             {$push: {following_games: game.id}}
         )
 
-    if (user.following_games.includes(game.id)) throw "Ya sigues este juego."
-    if (game.followers.includes(user.id)) throw "Ya sigues este juego."
+    if (user.following_games.includes(game.id)) throw errorMessages.games['already-follow']
+    if (game.followers.includes(user.id)) throw errorMessages.games['already-follow']
 
-    res.json({
-        message: 'Seguimiento de juego exitoso.'
-    })
+    sendResponse(res, "Seguimiento de juego exitoso.")
 
 }
 
@@ -155,8 +149,8 @@ exports.unfollow = async (req, res) => {
         .findOne({_id: target_id})
     const user = await User
         .findOne({_id: id})
-    if (!user) throw "No se pudo encontrar un usuario con este ID."
-    if (!game) throw "No se pudo encontrar un juego con este ID."
+        if (!user) throw errorMessages.users['id-not-found']
+        if (!game) throw errorMessages.games['id-not-found']
 
     if (game.followers.includes(user.id))
         await Game.updateOne(
@@ -169,12 +163,10 @@ exports.unfollow = async (req, res) => {
             {$pull: {following_games: game.id}}
         )
 
-    if (!user.following_games.includes(game.id)) throw "No sigues este juego."
-    if (!game.followers.includes(user.id)) throw "No sigues este juego."
+    if (!user.following_games.includes(game.id)) throw errorMessages.games['already-unfollow']
+    if (!game.followers.includes(user.id)) throw errorMessages.games['already-unfollow']
 
-    res.json({
-        message: 'Juego eliminado de tus juegos seguidos.'
-    })
+    sendResponse(res, "Juego eliminado de tus juegos seguidos.")
 
 }
 
@@ -207,11 +199,9 @@ exports.getOne = async (req, res) => {
         .populate('genre', 'title -_id')
         .populate('classification', 'title image -_id')
 
-    if (!game) throw "Juego no encontrado :C"
+    if (!game) throw errorMessages.games['not-found']
 
-    res.json({
-        result: game
-    })
+    sendResponse(res, game)
 
 }
 
@@ -230,8 +220,6 @@ exports.searchByName = async (req, res) => {
         )
         .populate('developers', 'title -_id')
     
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }

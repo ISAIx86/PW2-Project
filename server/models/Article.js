@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const article_schema = new mongoose.Schema({
     article_type: {
         type: String,
-        required: 'El tipo de artículo es requerido.'
+        required: errorMessages.article['required-type']
     },
     publish_datetime: {
         type: Date,

@@ -3,7 +3,8 @@ exports.catchErrors = (fn) => {
         fn(req, res, next).catch((err) => {
             if (typeof err === "string") {
                 res.status(400).json({
-                    message:err
+                    state: 'error',
+                    content: err
                 })
             } else {
                 next(err)

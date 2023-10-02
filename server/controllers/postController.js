@@ -4,6 +4,8 @@ const Post = mongoose.model('publicaciones')
 const Game = mongoose.model('juegos')
 const Multimedia = mongoose.model('multimedias')
 const User = mongoose.model('usuarios')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -16,7 +18,7 @@ exports.create = async (req, res) => {
 
     if (typeof game_id !== 'undefined' && game_id !== "") {
         const game = await Game.findOne({_id: game_id, is_deleted: false})
-        if (!game) throw "No se encontró un juego con este ID."
+        if (!game) throw errorMessages.games['id-not-found']
     }
 
     const article = new Article({
@@ -51,9 +53,7 @@ exports.create = async (req, res) => {
     await post.save()
     await article.save()
 
-    res.json({
-        message: "Publicación exitosa."
-    })
+    sendResponse(res, "Publicación exitosa.")
 
 }
 
@@ -64,10 +64,10 @@ exports.delete = async (req, res) => {
     const id = req.payload.id
 
     const article = await Article.find({_id: postID, is_deleted: false, article_type: 'post'})
-    if (!article) throw "No se encontró una publicación con este ID"
+    if (!article) throw errorMessages.posts['id-not-found']
 
     const post = await Post.find({_id: article.id})
-    if (post.author !== id) throw "No eres autor de esta publicación."
+    if (post.author !== id) throw errorMessages.posts['invalid-author']
 
     article.set({
         is_deleted: true
@@ -75,9 +75,7 @@ exports.delete = async (req, res) => {
 
     await article.save()
 
-    res.json({
-        message: "Publicación eliminada."
-    })
+    sendResponse(res, "Publicación eliminada.")
 
 }
 
@@ -97,9 +95,9 @@ exports.getByUser = async (req, res) => {
     const offset = ((page - 1) * elem_per_page)
 
     const user = await User.findOne({username: _username, is_deleted: false})
-    if (!user) throw "No se encontró el usuario."
+    if (!user) throw errorMessages.users['not-found']
 
-    if (user.is_private) throw "Esta cuenta es privada."
+    if (user.is_private) throw errorMessages.users['private-account']
 
     const results = await Post
         .aggregate([
@@ -162,9 +160,7 @@ exports.getByUser = async (req, res) => {
         .skip(offset)
         .limit(elem_per_page)
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -183,10 +179,10 @@ exports.getByGame = async (req, res) => {
     const offset = ((page - 1) * elem_per_page)
 
     const game = await Game.findOne({name_id: _game_id, is_deleted: false})
-    if (!game) throw "No se pudo encontrar el juego con este código de nombre."
+    if (!game) throw errorMessages.games['nameid-not-found']
 
     const user = await User.findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
     const results = await Post
         .aggregate([
@@ -249,9 +245,7 @@ exports.getByGame = async (req, res) => {
         .skip(offset)
         .limit(elem_per_page)
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -269,7 +263,7 @@ exports.getFeed = async (req, res) => {
     const offset = ((page - 1) * elem_per_page)
 
     const user = await User.findOne({_id: id, is_deleted: false})
-    if (!user) throw "No se pudo encontrar el usuario con este ID."
+    if (!user) throw errorMessages.users['id-not-found']
 
     const following_games = user.following_games.map((item) => {return new mongoose.Types.ObjectId(item)})
     const following_users = user.following.map((item) => {return new mongoose.Types.ObjectId(item)})
@@ -341,8 +335,6 @@ exports.getFeed = async (req, res) => {
         .skip(offset)
         .limit(elem_per_page)
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }

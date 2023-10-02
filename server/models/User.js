@@ -4,40 +4,41 @@ const Regex = require('../handlers/regex')
 const uploader = require('../middlewares/uploader')
 const fs = require('fs')
 const date = require('date-and-time')
+const errorMessages = require('../handlers/error-messages.json')
 
 const user_schema = new mongoose.Schema({
     nombres: {
         type: String,
         validate: {
             validator: v => Regex.names.test(v),
-            message: 'El nombre tiene formato no válido.'
+            message: errorMessages.users['bad-name']
         },
-        required: 'El nombre es requerido.'
+        required: errorMessages.users['required-name']
     },
     apellidos: {
         type: String,
         validate: {
             validator: v => Regex.names.test(v),
-            message: 'El apellido tiene formato no válido.'
+            message: errorMessages.users['bad-last']
         },
-        required: 'El apellido es requerido.'
+        required: errorMessages.users['required-last']
     },
     username: {
         type: String,
         validate: [
             {
                 validator: v => Regex.usernames.test(v),
-                message: 'El nombre de usuario tiene formato no válido.'
+                message: errorMessages.users['bad-username']
             },
             {
                 validator: async function (v) {
                     const result = await this.constructor.findOne({_id: {$ne: this.id}, username: v})
                     return !result
                 },
-                message: 'Este nombre de usuario ya fué tomado.'
+                message: errorMessages.users['taken-username']
             }
         ],
-        required: 'El nombre de usuario es requerido.'
+        required: errorMessages.users['required-username']
     },
     image: {
         type: String
@@ -51,28 +52,28 @@ const user_schema = new mongoose.Schema({
     },
     fecha_nac: {
         type: Date,
-        required: 'La fecha de nacimiento es requerida.'
+        required: errorMessages.users['required-dob']
     },
     email: {
         type: String,
         validate: [
             {
                 validator: v => Regex.emails.test(v),
-                message: 'El correo electrónico tiene formato no válido.'
+                message: errorMessages.users['bad-email']
             },
             {
                 validator: async function (v) {
                     const result = await this.constructor.findOne({_id: {$ne: this.id}, email: v})
                     return !result
                 },
-                message: 'Ya existe un usuario con este correo.'
+                message: errorMessages.users['taken-email']
             }
         ],
-        required: 'El correo es requierido.'
+        required: errorMessages.users['required-email']
     },
     password: {
         type: String,
-        required: 'La contraseña es requerida.'
+        required: errorMessages.users['required-password']
     },
     is_mod: {
         type: Boolean,
@@ -115,7 +116,7 @@ user_schema.methods.uploadImage = async function uploadImage(img_file) {
 
     if (fs.existsSync(path.final_path))
         this.setImage(path.new_filename)
-    else this.invalidate('image', 'Ocurrio un error para subir la imagen')
+    else this.invalidate('image', errorMessages.users['image-upload'])
 
 }
 

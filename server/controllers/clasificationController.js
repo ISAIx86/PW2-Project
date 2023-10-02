@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -18,9 +20,7 @@ exports.create = async (req, res) => {
 
     await new_class.save()
 
-    res.json({
-        message: 'Clasificación creada exitosamente!'
-    })
+    sendResponse(res, "Clasificación creada exitosamente.")
 
 }
 
@@ -37,7 +37,7 @@ exports.modify = async (req, res) => {
         is_deleted: false
     })
 
-    if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
+    if (!curr_class) throw errorMessages.classif['not-found']
 
     curr_class.set({
         title: typeof title !== 'undefined' ? title : curr_class.title
@@ -48,9 +48,7 @@ exports.modify = async (req, res) => {
 
     await curr_class.save()
 
-    res.json({
-        message: 'Clasificación modificada exitosamente!'
-    })
+    sendResponse(res, "Clasificación modificada exitosamente.")
 
 }
 
@@ -60,7 +58,7 @@ exports.delete = async (req, res) => {
 
     const curr_class = await Classification.findById(clID)
 
-    if (!curr_class) throw "No se pudo encontrar una clasificación con ese ID."
+    if (!curr_class) throw errorMessages.classif['not-found']
 
     curr_class.set({
         is_deleted: true
@@ -68,9 +66,7 @@ exports.delete = async (req, res) => {
 
     curr_class.save()
 
-    res.json({
-        message: 'Clasificación eliminada exitosamente!'
-    })
+    sendResponse(res, "Clasificación eliminada exitosamente.")
 
 }
 
@@ -85,9 +81,7 @@ exports.searchByTitle = async (req, res) => {
             {image:1, title:1}
         )
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -101,10 +95,8 @@ exports.getById = async (req, res) => {
             {title: 1, image: 1, created_by: 1}
         )
         .populate('created_by', 'image username')
-    if (!result) throw  "No se pudo encontrar una clasificación con este ID."
+    if (!result) throw errorMessages.classif['not-found']
 
-    res.json({
-        result
-    })
+    sendResponse(res, results)
 
 }

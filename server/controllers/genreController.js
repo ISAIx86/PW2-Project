@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Genre = mongoose.model('generos')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -15,9 +17,7 @@ exports.create = async (req, res) => {
 
     await genre.save()
 
-    res.json({
-        message: 'Género creado exitosamente!'
-    })
+    sendResponse(res, "Género creado exitosamente.")
 
 }
 
@@ -34,7 +34,7 @@ exports.modify = async (req, res) => {
         is_deleted: false
     })
 
-    if (!genre) throw "No se pudo encontrar un género con este ID"
+    if (!genre) throw errorMessages.genre['id-not-found']
 
     genre.set({
         title: typeof title !== 'undefined' ? title : genre.title
@@ -42,9 +42,7 @@ exports.modify = async (req, res) => {
 
     await genre.save()
 
-    res.json({
-        message: 'Género modificado exitosamente!'
-    })
+    sendResponse(res, "Género modificado exitosamente.")
 
 }
 
@@ -54,7 +52,7 @@ exports.delete = async (req, res) => {
 
     const genre = await Genre.findById(genID)
 
-    if (!genre) throw "No se pudo encontrar un género con este ID."
+    if (!genre) throw errorMessages.genre['id-not-found']
 
     genre.set({
         is_deleted: true
@@ -62,9 +60,7 @@ exports.delete = async (req, res) => {
 
     genre.save()
 
-    res.json({
-        message: 'Género eliminado exitosamente!'
-    })
+    sendResponse(res, "Género eliminado exitosamente.")
     
 }
 
@@ -79,9 +75,7 @@ exports.searchByTitle = async (req, res) => {
             {title: 1}
         )
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -89,16 +83,14 @@ exports.getById = async (req, res) => {
 
     const _genre_id = req.params._genre_id
 
-    const result = await Genre
+    const results = await Genre
         .find(
             {_id: _genre_id, is_deleted: false},
             {title: 1, created_by: 1}
         )
         .populate('created_by', 'image username')
-    if (!result) throw  "No se pudo encontrar un género con este ID."
+    if (!results) throw errorMessages.genre['id-not-found']
 
-    res.json({
-        result
-    })
+    sendResponse(res, results)
 
 }

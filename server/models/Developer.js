@@ -1,13 +1,14 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const dev_schema = new mongoose.Schema({
     title: {
         type: String,
-        required: 'El Desarrollador requiere un nombre.'
+        required: errorMessages.develop['required-name']
     },
     created_by: {
         type: mongoose.Types.ObjectId,
-        required: 'El Desarrollador requiere el ID del autor.',
+        required: errorMessages.develop['required-author'],
         ref:'usuarios'
     },
     is_deleted: {

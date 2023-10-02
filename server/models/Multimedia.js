@@ -3,16 +3,17 @@ const mongoose = require('mongoose')
 const uploader = require('../middlewares/uploader')
 const fs = require('fs')
 const date = require('date-and-time')
+const errorMessages = require('../handlers/error-messages.json')
 
 const multimedia_schema = new mongoose.Schema({
     directory: {
         type: String,
-        required: 'El archivo debe tener un directorio.'
+        required: errorMessages.multimedia['required-directory']
     },
     created_by: {
         type: mongoose.Types.ObjectId,
         ref: 'usuarios',
-        required: 'El archivo debe tener un autor.'
+        required: errorMessages.multimedia['required-author']
     },
     is_deleted: {
         type: Boolean,

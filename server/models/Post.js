@@ -1,10 +1,11 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const post_schema = new mongoose.Schema({
     _id: {
         type: mongoose.Types.ObjectId,
         ref: 'articulos',
-        required: 'Debe tener ID de artículo.'
+        required: errorMessages.posts['required-id']
     },
     content: {
         type: String
@@ -12,7 +13,7 @@ const post_schema = new mongoose.Schema({
     author: {
         type: mongoose.Types.ObjectId,
         ref: 'usuarios',
-        required: 'La publicación debe tener un autor.'
+        required: errorMessages.posts['required-author']
     },
     game: {
         type: mongoose.Types.ObjectId,

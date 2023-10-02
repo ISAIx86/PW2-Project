@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
+const errorMessages = require('../handlers/error-messages.json')
 
 const genre_schema = new mongoose.Schema({
     title: {
         type: String,
-        required: 'El Género requiere un nombre.'
+        required: errorMessages.genre['required-name']
     },
     games: {
         type: [mongoose.Types.ObjectId],
@@ -11,7 +12,7 @@ const genre_schema = new mongoose.Schema({
     },
     created_by: {
         type: mongoose.Types.ObjectId,
-        required: 'El Género requiere el ID del autor.',
+        required: errorMessages.genre['required-author'],
         ref: 'usuarios'
     },
     is_deleted: {

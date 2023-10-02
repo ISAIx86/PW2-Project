@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const uploader = require('../middlewares/uploader')
 const fs = require('fs')
 const Regex = require('../handlers/regex')
+const errorMessages = require('../handlers/error-messages.json')
 
 const game_schema = new mongoose.Schema({
     name_id: {
@@ -13,30 +14,30 @@ const game_schema = new mongoose.Schema({
                     const result = await this.constructor.findOne({_id: {$ne: this.id}, name_id: v})
                     return !result
                 },
-                message: 'Ya existe un juego con este código de nombre.'
+                message: errorMessages.games['taken-nameid']
             },
             {
                 validator: v => Regex.game_nid.test(v),
-                message: 'El código de nombre no tiene formato correcto.'
+                message: errorMessages.games['bad-nameid']
             }
         ],
-        required: 'Se requiere un nombre único.'
+        required: errorMessages.games['required-nameid']
     },
     title: {
         type: String,
-        required: 'Se requiere el título.'
+        required: errorMessages.games['required-title']
     },
     descrip: {
         type: String,
-        required: 'Se requiere una descripción del juego.'
+        required: errorMessages.games['required-desc']
     },
     image: {
         type: String,
-        required: 'Se requiere una imagen de título.'
+        required: errorMessages.games['required-image']
     },
     cover: {
         type: String,
-        required: 'Se requiere una imagen de portada.'
+        required: errorMessages.games['required-cover']
     },
     rating: {
         type: Number,
@@ -44,35 +45,35 @@ const game_schema = new mongoose.Schema({
     },
     classification: {
         type: mongoose.Types.ObjectId,
-        required: 'El juego debe estar clasificado.',
+        required: errorMessages.games['required-class'],
         ref: 'clasificaciones'
     },
     genre: {
         type: [mongoose.Types.ObjectId],
         validate: {
             validator: v => Array.isArray(v) & v.length > 0,
-            message: 'El juego debe tener al menos un género asociado.'
+            message: errorMessages.games['required-genre']
         },
         ref: 'generos',
-        required: 'El juego debe tener al menos un género asociado.'
+        required: errorMessages.games['required-genre']
     },
     developers: {
         type: [mongoose.Types.ObjectId],
         validate: {
             validator: v => Array.isArray(v) & v.length > 0,
-            message: 'El juego debe tener al menos un desarrollador asociado.'
+            message: errorMessages.games['required-dev']
         },
         ref: 'desarrolladores',
-        required: 'El juego debe tener al menos un desarrollador asociado.'
+        required: errorMessages.games['required-dev']
     },
     platforms: {
         type: [mongoose.Types.ObjectId],
         validate: {
             validator: v => Array.isArray(v) & v.length > 0,
-            message: 'El juego debe tener al menos una plataforma asociada.'
+            message: errorMessages.games['required-plat']
         },
         ref: 'plataformas',
-        required: 'El juego debe tener al menos una plataforma asociada.'
+        required: errorMessages.games['required-plat']
     },
     followers: {
         type: [mongoose.Types.ObjectId],
@@ -80,12 +81,12 @@ const game_schema = new mongoose.Schema({
     },
     release_date: {
         type: Date,
-        required: 'La fecha de lanzamiento es requerida.'
+        required: errorMessages.games['required-dor']
     },
     created_by: {
         type: mongoose.Types.ObjectId,
         ref: 'usuarios',
-        required: 'Se requiere el ID del creador.'
+        required: errorMessages.games['required-author']
     },
     is_deleted: {
         type: Boolean,

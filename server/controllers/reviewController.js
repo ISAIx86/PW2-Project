@@ -2,6 +2,8 @@ const mongoose = require('mongoose')
 const Article = mongoose.model('articulos')
 const Review = mongoose.model('resenas')
 const Game = mongoose.model('juegos')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -14,7 +16,7 @@ exports.create = async (req, res) => {
     const id = req.payload.id
 
     const game = await Game.findOne({_id: game_id, is_deleted: false})
-    if (!game) throw "No se encontró un juego con este ID."
+    if (!game) throw errorMessages.games['id-not-found']
 
     const article = new Article({
         article_type: 'review'
@@ -56,9 +58,7 @@ exports.create = async (req, res) => {
     game.setRating(new_rate[0].avg_rate)
     await game.save()
     
-    res.json({
-        message: "Reseña publicada con éxito."
-    })
+    sendResponse(res, "Reseña publicada con éxito.")
 
 }
 
@@ -78,7 +78,7 @@ exports.getByGame = async (req, res) => {
     const offset = ((page - 1) * elem_per_page)
 
     const game = await Game.findOne({name_id: _game_id, is_deleted: false})
-    if (!game) throw "No se pudo encontrar un juego con este código de nombre."
+    if (!game) throw errorMessages.games['nameid-not-found']
 
     const results = await Review.aggregate([
         {$lookup:{
@@ -114,8 +114,6 @@ exports.getByGame = async (req, res) => {
     .skip(offset)
     .limit(elem_per_page)
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }

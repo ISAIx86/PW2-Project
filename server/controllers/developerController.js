@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 const Developer = mongoose.model('desarrolladores')
+const errorMessages = require('../handlers/error-messages.json')
+const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {
@@ -15,9 +17,7 @@ exports.create = async (req, res) => {
 
     await dev.save()
 
-    res.json({
-        message: 'Desarrollador añadida exitosamente!'
-    })
+    sendResponse(res, "Desarrollador añadida exitosamente.")
 
 }
 
@@ -34,7 +34,7 @@ exports.modify = async (req, res) => {
         is_deleted: false
     })
 
-    if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
+    if (!dev) throw errorMessages.develop['not-found']
 
     dev.set({
         title: typeof title !== 'undefined' ? title : dev.title
@@ -42,9 +42,7 @@ exports.modify = async (req, res) => {
 
     await dev.save()
 
-    res.json({
-        message: 'Desarrollador modificado exitosamente!'
-    })
+    sendResponse(res, "Desarrollador modificado exitosamente.")
 
 }
 
@@ -54,7 +52,7 @@ exports.delete = async (req, res) => {
 
     const dev = await Developer.findById(devID)
 
-    if (!dev) throw "No se pudo encontrar un desarrollador con ese ID."
+    if (!dev) throw errorMessages.develop['not-found']
 
     dev.set({
         is_deleted: true
@@ -62,9 +60,7 @@ exports.delete = async (req, res) => {
 
     dev.save()
 
-    res.json({
-        message: 'Desarrollador eliminado exitosamente!'
-    })
+    sendResponse(res, "Desarrollador eliminado exitosamente.")
     
 }
 
@@ -79,9 +75,7 @@ exports.searchByTitle = async (req, res) => {
             {title: 1}
         )
 
-    res.json({
-        results
-    })
+    sendResponse(res, results)
 
 }
 
@@ -89,16 +83,14 @@ exports.getById = async (req, res) => {
 
     const _dev_id = req.params._dev_id
 
-    const result = await Developer
+    const results = await Developer
         .find(
             {_id: _dev_id, is_deleted: false},
             {title: 1, created_by: 1}
         )
         .populate('created_by', 'image username')
-    if (!result) throw  "No se pudo encontrar un desarrollador con este ID."
+    if (!results) throw errorMessages.develop['not-found']
 
-    res.json({
-        result
-    })
+    sendResponse(res, results)
 
 }
