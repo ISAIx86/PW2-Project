@@ -344,7 +344,7 @@ exports.profile = async (req, res) => {
         )
     if (!result) throw errorMessages.users['not-found']
 
-    sendResponse(res, "Encontrado.")
+    sendResponse(res, {message: "Encontrado", result})
 
 }
 

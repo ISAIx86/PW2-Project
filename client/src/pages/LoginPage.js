@@ -22,13 +22,13 @@ function Login() {
 
         axios.post('http://localhost:5000/user/login', userlog)
         .then((response) => {
-            makeToast('success', response.data.message)
+            makeToast('success', response.data.content.message)
             //localStorage.setItem('CC_Token', response.data.token)
         })
         .catch((err) => {
-            if (!err.response && !err.response.data && !err.response.data.message)
+            if (!err.response && !err.response.data && !err.response.data.content)
                 makeToast('error', "Server no responde!")
-            else makeToast('error', err.response.data.message)
+            else makeToast('error', err.response.data.content)
         })
         
     }

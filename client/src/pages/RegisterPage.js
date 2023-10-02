@@ -84,13 +84,13 @@ function Register() {
 
 		axios.post('http://localhost:5000/user/register', user, {headers: {"Content-Type": "multipart/form-data"}})
 		.then((response) => {
-			makeToast('success', response.data.message)
+			makeToast('success', response.data.content)
 			navigate('/login')
 		})
 		.catch((err) => {
-			if (!err.response && !err.response.data && !err.response.data.messsage)
+			if (!err.response && !err.response.data && !err.response.data.content)
                 makeToast("error", "Server not responding!")
-            else makeToast("error", err.response.data.message)
+            else makeToast("error", err.response.data.content)
 		})
 
 	}
