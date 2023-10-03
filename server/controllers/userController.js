@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
 
     await user.save()
 
-    sendResponse(res, "Ya estas registrado, " + username + ". ¡Disftuta tu navegación!")
+    sendResponse(res, `Ya estas registrado, ${username}. ¡Disftuta tu navegación!`)
 
 }
 
@@ -270,7 +270,7 @@ exports.login = async (req, res) => {
     sendResponse(
         res,
         {
-            message: "Bienvenido, " + user.username,
+            message: `Bienvenido, ${user.username}.`,
             token
         }
     )
@@ -315,12 +315,12 @@ exports.profile = async (req, res) => {
     else
         filters = {username: _username, is_deleted: false}
     
-    const result = await User
+    const results = await User
         .findOne(
             filters,
             {
                 image: 1,
-                _username: 1,
+                username: 1,
                 descrip: 1,
                 is_private: 1,
                 is_following: {$in: [{$toObjectId: id},'$followers']},
@@ -342,9 +342,9 @@ exports.profile = async (req, res) => {
                 ]}
             }
         )
-    if (!result) throw errorMessages.users['not-found']
+    if (!results) throw errorMessages.users['not-found']
 
-    sendResponse(res, {message: "Encontrado", result})
+    sendResponse(res, results)
 
 }
 

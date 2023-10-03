@@ -38,7 +38,8 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   email: Correo electrónico del usuario. Requerido. Único.
     -   password: Contraseña. Requerido.
     -   conf_password: Confirmación de contraseña. Requerido.
-    
+    Headers:
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 2. Update
     Método: POST
@@ -56,6 +57,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   email: Correo electrónico del usuario. Opcional.
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 3. Password
     Método: POST
@@ -164,6 +166,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   platforms: Plataformas en los que está disponible el juego. Requerido.
     Headers:
     -   Authorization: Bearer Token. Token de moderador. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 2. Modify
     Método: POST
@@ -183,6 +186,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   platforms: Plataformas en los que está disponible el juego. Opcional.
     Headers:
     -   Authorization: Bearer Token. Token de moderador. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 3. Delete
     Método: POST
@@ -240,6 +244,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   image: Logo ESRB de la clasificación. Requerido.
     Headers:
     -   Authorization: Bearer Token. Token de moderadores. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 2. Modify
     Método: POST
@@ -251,6 +256,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   image: Logo ESRB de la clasificación. Opcional.
     Headers:
     -   Authorization: Bearer Token. Token de moderadores. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 3. Delete
     Método: POST
@@ -460,6 +466,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   multimedia: Archivos multimedia. Opcional.
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
+    -   Content-Type: 'multipart/form-data'. Formulario con archivos multimedia.
 
 2. Delete
     Método: POST

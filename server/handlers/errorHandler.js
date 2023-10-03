@@ -3,7 +3,7 @@ exports.catchErrors = (fn) => {
         fn(req, res, next).catch((err) => {
             if (typeof err === "string") {
                 res.status(400).json({
-                    state: 'error',
+                    state: 'failed',
                     content: err
                 })
             } else {
@@ -20,27 +20,34 @@ exports.mongooseErrors = (err, req, res, next) => {
     errorKeys.forEach((key) => (message += err.errors[key].message + ", "))
     message = message.substr(0, message.length - 2)
     res.status(400).json({
-        message
+        status: 'error',
+        content: message
     })
 }
 
 exports.developmentErrors = (err, req, res, next) => {
     err.stack = err.stack || ""
     const errorDetails = {
-        message: err.message,
-        status: err.status,
-        stack: err.stack
+        status: 'error',
+        content: {
+            message: err.message,
+            status: err.status,
+            stack: err.stack
+        }
     }
+    res.status(err.status || 500).json(errorDetails)
 }
 
 exports.productionErrors = (err, req, res, next) => {
     res.status(err.status || 500).json({
-        error:"Internal Server Error"
+        status: "error",
+        content: "Internal Server Error."
     })
 }
 
 exports.notFound = (req, res, next) => {
     res.status(404).json({
-        message:"Route not found"
+        status: "error",
+        content: "Ruta no encontrada."
     })
 }
