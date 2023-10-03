@@ -68,6 +68,8 @@ exports.delete = async (req, res) => {
 exports.searchByTitle = async (req, res) => {
 
     const { text_input } = req.body
+
+    if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
     
     const results = await Genre
         .find(

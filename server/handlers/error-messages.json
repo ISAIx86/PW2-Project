@@ -1,4 +1,7 @@
 {
+    "general": {
+        "empty-serach": "Ingrese un texto a la búsqueda."
+    },
     "users": {
         "bad-name": "El nombre tiene formato no válido.",
         "required-name": "El nombre es requerido.",

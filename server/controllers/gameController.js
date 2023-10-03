@@ -210,6 +210,8 @@ exports.searchByName = async (req, res) => {
     const { text_input } = req.body
     const id = req.payload.id
 
+    if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
+
     const results = await Game
         .find(
             {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
