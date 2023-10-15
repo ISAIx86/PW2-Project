@@ -6,6 +6,12 @@ import * as io5Ico from 'react-icons/io5';
 
 export const SidebarData = [
     {
+        title: 'Administrador',
+        path: '/admin',
+        icon: <io5Ico.IoPeopleSharp />,
+        cName: 'nav-text'
+    },
+    {
         title: 'Publicación',
         path: '/add',
         icon: <BiIco.BiAddToQueue />,

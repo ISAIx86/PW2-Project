@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
+import Admin from './pages/AdminPage'
 import Index from './pages/IndexPage'
 import Login from './pages/LoginPage'
 import Register from './pages/RegisterPage'
@@ -32,6 +33,7 @@ function App() {
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/search" element={<Search />} />
 				<Route path="/settings" element={<Settings />} />
+				<Route path="/admin" element={<Admin />} />
 			</Routes>
 		</div>
 		</div>
