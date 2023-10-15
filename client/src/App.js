@@ -12,6 +12,7 @@ import Notifications from './pages/NotificationsPage'
 import Profile from './pages/ProfilePage'
 import Search from './pages/SearchPage'
 import Settings from './pages/SettingsPage'
+import UsersProfilesPage from './pages/UsersProfilesPage'
 
 import './styles/App.css'
 
@@ -34,6 +35,7 @@ function App() {
 				<Route path="/search" element={<Search />} />
 				<Route path="/settings" element={<Settings />} />
 				<Route path="/admin" element={<Admin />} />
+				<Route path="/userprofile" element={<UsersProfilesPage />} />
 			</Routes>
 		</div>
 		</div>
