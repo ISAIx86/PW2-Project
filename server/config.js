@@ -1,7 +1,9 @@
 const config = {
     appConfig: {
         host: process.env.APP_HOST,
-        port: process.env.APP_PORT
+        port: process.env.APP_PORT,
+        timezone: process.env.TIMEZONE,
+        textSearchBaseLimit: 10
     },
     dbConfig: {
         port: process.env.DB_PORT,

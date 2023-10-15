@@ -6,9 +6,10 @@ const article_schema = new mongoose.Schema({
         type: String,
         required: errorMessages.article['required-type']
     },
-    publish_datetime: {
-        type: Date,
-        default: new Date()
+    author: {
+        type: mongoose.Types.ObjectId,
+        ref: 'usuarios',
+        required: errorMessages.posts['required-author']
     },
     users_likes: {
         type: [mongoose.Types.ObjectId],
@@ -18,6 +19,9 @@ const article_schema = new mongoose.Schema({
         type: Boolean,
         default: false
     }
+},
+{
+    timestamps: true
 })
 
 module.exports = mongoose.model('articulos', article_schema)

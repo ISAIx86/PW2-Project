@@ -4,6 +4,7 @@ const Post = mongoose.model('publicaciones')
 const Game = mongoose.model('juegos')
 const Multimedia = mongoose.model('multimedias')
 const User = mongoose.model('usuarios')
+
 const errorMessages = require('../handlers/error-messages.json')
 const {sendResponse} = require('../handlers/answerHandler')
 
@@ -22,7 +23,8 @@ exports.create = async (req, res) => {
     }
 
     const article = new Article({
-        article_type: 'post'
+        article_type: 'post',
+        author: id
     })
     const post = new Post({
         _id: article.id,
@@ -31,23 +33,23 @@ exports.create = async (req, res) => {
         game: game_id !== "" ? game_id : undefined
     })
 
-    const multim_files = []
-    const multim_objects = []
-    const multim_ids = []
+    const media_files = []
+    const media_objects = []
+    const media_ids = []
     if (req.files && req.files.multimedia) {
-        Array.isArray(req.files.multimedia) ? multim_files.push(...req.files.multimedia) : multim_files.push(req.files.multimedia)
-        for (let i = 0; i < multim_files.length; i++) {
-            const new_multim = new Multimedia({
+        Array.isArray(req.files.multimedia) ? media_files.push(...req.files.multimedia) : media_files.push(req.files.multimedia)
+        for (let i = 0; i < media_files.length; i++) {
+            const new_media = new Multimedia({
                 created_by: id
             })
-            const success_upload = await new_multim.upload(post.id, i, multim_files[i])
+            const success_upload = await new_media.upload(post.id, i, media_files[i])
             if (success_upload) {
-                multim_objects.push(new_multim)
-                multim_ids.push(new_multim.id)
+                media_objects.push(new_media)
+                media_ids.push(new_media.id)
             }
         }
-        for (const mult of multim_objects) await mult.save()
-        post.multimedia = multim_ids
+        for (const media of media_objects) await media.save()
+        post.multimedia = media_ids
     }
 
     await post.save()
@@ -64,10 +66,13 @@ exports.delete = async (req, res) => {
     const id = req.payload.id
 
     const article = await Article.find({_id: postID, is_deleted: false, article_type: 'post'})
-    if (!article) throw errorMessages.posts['id-not-found']
+    if (!article) throw errorMessages.article['not-found']
 
-    const post = await Post.find({_id: article.id})
-    if (post.author !== id) throw errorMessages.posts['invalid-author']
+    const post = await Post.findOne({_id: article.id})
+    const user = await User.findOne({_id: id, is_deleted: false})
+    if (!post) throw errorMessages.posts['id-not-found']
+    if (!user) throw errorMessages.users['id-not-found']
+    if (post.author !== user._id) throw errorMessages.posts['invalid-author']
 
     article.set({
         is_deleted: true
@@ -98,7 +103,7 @@ exports.getByUser = async (req, res) => {
     if (!user) throw errorMessages.users['not-found']
 
     if (user.is_private) throw errorMessages.users['private-account']
-
+    
     const results = await Post
         .aggregate([
             {$lookup: {
@@ -140,7 +145,7 @@ exports.getByUser = async (req, res) => {
                     {name_id: '$game.name_id', image: '$game.image', title: '$game.title'},
                     '$$REMOVE'
                 ]},
-                content: {
+                container: {
                     content: '$content',
                     multimedia: {$map: {
                         input: '$multimedia',
@@ -151,15 +156,24 @@ exports.getByUser = async (req, res) => {
                     }}
                 },
                 article_details: {
-                    publish_datetime: '$article.publish_datetime',
+                    publish_datetime: '$article.created_at',
                     you_like: {$in: [{$toObjectId: id}, '$article.users_likes']},
                     likes: {$size: '$article.users_likes'}
                 }
+            }},
+            {$facet: {
+                pagination_data: [
+                    {$count: "total_docs"},
+                    {$addFields: {page: page}},
+                    {$addFields: {elements: elem_per_page}}
+                ],
+                data: [
+                    {$skip: offset},
+                    {$limit: elem_per_page}
+                ]
             }}
         ])
-        .skip(offset)
-        .limit(elem_per_page)
-
+    
     sendResponse(res, results)
 
 }
@@ -236,14 +250,23 @@ exports.getByGame = async (req, res) => {
                     }}
                 },
                 article_details: {
-                    publish_datetime: '$article.publish_datetime',
+                    publish_datetime: '$article.created_at',
                     you_like: {$in: [{$toObjectId: user.id}, '$article.users_likes']},
                     likes: {$size: '$article.users_likes'}
                 }
+            }},
+            {$facet: {
+                pagination_data: [
+                    {$count: "total_docs"},
+                    {$addFields: {page: page}},
+                    {$addFields: {elements: elem_per_page}}
+                ],
+                data: [
+                    {$skip: offset},
+                    {$limit: elem_per_page}
+                ]
             }}
         ])
-        .skip(offset)
-        .limit(elem_per_page)
 
     sendResponse(res, results)
 
@@ -326,14 +349,23 @@ exports.getFeed = async (req, res) => {
                     }}
                 },
                 article_details: {
-                    publish_datetime: '$article.publish_datetime',
+                    publish_datetime: '$article.created_at',
                     you_like: {$in: [{$toObjectId: user.id}, '$article.users_likes']},
                     likes: {$size: '$article.users_likes'}
                 }
+            }},
+            {$facet: {
+                pagination_data: [
+                    {$count: "total_docs"},
+                    {$addFields: {page: page}},
+                    {$addFields: {elements: elem_per_page}}
+                ],
+                data: [
+                    {$skip: offset},
+                    {$limit: elem_per_page}
+                ]
             }}
         ])
-        .skip(offset)
-        .limit(elem_per_page)
 
     sendResponse(res, results)
 

@@ -3,8 +3,12 @@ const User = mongoose.model('usuarios')
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
 const Regex = require('../handlers/regex')
+
+const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
 const {sendResponse} = require('../handlers/answerHandler')
+
+const textSearchLimit = config.appConfig.textSearchBaseLimit
 
 // Create
 exports.register = async (req, res) => {
@@ -30,8 +34,10 @@ exports.register = async (req, res) => {
 
     await user.validate()
 
-    if (user.password && !Regex.passwords.test(user.password)) throw errorMessages.users['bad-password']
-    if (user.password !== conf_password) throw errorMessages.users['bad-confirmation']
+    if (user.password && !Regex.passwords.test(user.password))
+        throw errorMessages.users['bad-password']
+    if (user.password !== conf_password)
+        throw errorMessages.users['bad-confirmation']
 
     user.set({
         password: sha256(user.password + process.env.SALT)
@@ -105,9 +111,12 @@ exports.changePassword = async (req, res) => {
     })
     if (!user) throw errorMessages.users['id-not-found']
 
-    if (sha256(password + process.env.SALT) !== user.password) throw errorMessages.users['wrong-actual-password']
-    if (!Regex.passwords.test(new_password)) throw errorMessages.users['bad-new-password']
-    if (new_password !== conf_password) throw errorMessages.users['bad-confirmation']
+    if (sha256(password + process.env.SALT) !== user.password)
+        throw errorMessages.users['wrong-actual-password']
+    if (!Regex.passwords.test(new_password))
+        throw errorMessages.users['bad-new-password']
+    if (new_password !== conf_password)
+        throw errorMessages.users['bad-confirmation']
 
     user.set({
         password: sha256(new_password + process.env.SALT)
@@ -154,13 +163,13 @@ exports.follow = async (req, res) => {
     if (!target_user) throw errorMessages.users['follow-target-not-found']
 
     if (target_user.is_private) {
-        if (target_user.followers.includes(user.id)) throw errorMessages.users['already-follow']
-        if (user.following.includes(target_user.id)) throw errorMessages.users['already-follow']
         if (!target_user.requests.includes(user.id))
             await User.updateOne(
                 {_id: target_user.id},
                 {$push: {requests: user.id}}
             )
+        if (target_user.requests.includes(user.id))
+            throw errorMessages.users['already-requested']
     } else {
         if (!target_user.followers.includes(user.id))
             await User.updateOne(
@@ -177,8 +186,8 @@ exports.follow = async (req, res) => {
                 {_id: user.id},
                 {$push: {following: target_user.id}}
             )
-        if (target_user.followers.includes(user.id)) throw errorMessages.users['already-follow']
-        if (user.following.includes(target_user.id)) throw errorMessages.users['already-follow']
+        if (user.following.includes(target_user.id) || target_user.followers.includes(user.id))
+            throw errorMessages.users['already-follow']
     }
 
     sendResponse(res, target_user.is_private ? "Solicitud de seguimiento enviada." : "Seguimiento exitoso.")
@@ -200,6 +209,7 @@ exports.acceptFollower = async (req, res) => {
     if (!requester) throw errorMessages.users['requester-not-found']
     
     if (!user.requests.includes(requester.id)) throw errorMessages.users['not-found-in-req-list']
+
     if (!user.followers.includes(requester.id))
         await User.updateOne(
             {_id: user.id},
@@ -217,6 +227,32 @@ exports.acceptFollower = async (req, res) => {
         )
 
     sendResponse(res, "Petición aceptada exitosamente.")
+
+}
+
+exports.denyFollower = async (req, res) => {
+
+    const { req_id } = req.body
+    const id = req.payload.id
+
+    if (req_id === id) throw errorMessages.users['follow-itself']
+
+    const requester = await User
+        .findOne({_id: req_id, is_deleted: false})
+    const user = await User
+        .findOne({_id: id, is_deleted: false})
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!requester) throw errorMessages.users['requester-not-found']
+
+    if (!user.requests.includes(requester.id)) throw errorMessages.users['not-found-in-req-list']
+
+    if (user.requests.includes(requester.id))
+        await User.updateOne(
+            {_id: user.id},
+            {$pull: {requests: requester.id}}
+        )
+
+    sendResponse(res, "Petición denegada.")
 
 }
 
@@ -243,8 +279,8 @@ exports.unfollow = async (req, res) => {
             {$pull: {following: target_user.id}}
         )
 
-    if (!target_user.followers.includes(user.id)) throw errorMessages.users['already-unfollow']
-    if (!user.following.includes(target_user.id)) throw errorMessages.users['already-unfollow']
+    if (!target_user.followers.includes(user.id) || !user.following.includes(target_user.id))
+        throw errorMessages.users['already-unfollow']
 
     sendResponse(res, "Se dejó de seguir al usuario.")
 
@@ -353,7 +389,8 @@ exports.searchUsername = async (req, res) => {
     const { text_input } = req.body
     const id = req.payload.id
 
-    if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
+    if (typeof text_input === 'undefined' | text_input === "")
+        throw errorMessages.general['empty-serach']
 
     const results = await User
         .find(
@@ -363,6 +400,7 @@ exports.searchUsername = async (req, res) => {
                 is_following: {$in: [{$toObjectId: id}, "$followers"]}
             }
         )
+        .limit(textSearchLimit)
 
     sendResponse(res, results)
 

@@ -1,8 +1,12 @@
 const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
+
+const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
 const {sendResponse} = require('../handlers/answerHandler')
+
+const textSearchLimit = config.appConfig.textSearchBaseLimit
 
 // Create
 exports.create = async (req, res) => {
@@ -33,11 +37,9 @@ exports.create = async (req, res) => {
 
     await game.validate(['name_id'])
 
-    // SUBIR IMAGEN DE JUEGO
     if (req.files && req.files.image)
         await game.uploadImage('title', req.files.image)
 
-    // SUBIR PORTADA DE JUEGO
     if (req.files && req.files.cover)
         await game.uploadImage('cover', req.files.cover)
 
@@ -81,10 +83,9 @@ exports.modify = async (req, res) => {
 
     await game.validate(['name_id'])
 
-    // SUBIR NUEVA IMAGEN DE JUEGO
     if (req.files && req.files.image)
         await game.uploadImage('title', req.files.image)
-    // SUBIR NUEVA PORTADA DE JUEGO
+
     if (req.files && req.files.cover)
         await game.uploadImage('cover', req.files.cover)
 
@@ -98,7 +99,11 @@ exports.delete = async (req, res) => {
 
     const { gameID } = req.body
 
-    const game = await Game.findById(gameID)
+    const game = await Game.findOne({
+        _id: gameID,
+        is_deleted: false
+    })
+    if (!game) throw errorMessages.games['id-not-found']
 
     game.set({
         is_deleted: true
@@ -149,8 +154,8 @@ exports.unfollow = async (req, res) => {
         .findOne({_id: target_id})
     const user = await User
         .findOne({_id: id})
-        if (!user) throw errorMessages.users['id-not-found']
-        if (!game) throw errorMessages.games['id-not-found']
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!game) throw errorMessages.games['id-not-found']
 
     if (game.followers.includes(user.id))
         await Game.updateOne(
@@ -198,7 +203,6 @@ exports.getOne = async (req, res) => {
         .populate('platforms', 'title -_id')
         .populate('genre', 'title -_id')
         .populate('classification', 'title image -_id')
-
     if (!game) throw errorMessages.games['not-found']
 
     sendResponse(res, game)
@@ -221,6 +225,7 @@ exports.searchByName = async (req, res) => {
             }
         )
         .populate('developers', 'title -_id')
+        .limit(textSearchLimit)
     
     sendResponse(res, results)
 

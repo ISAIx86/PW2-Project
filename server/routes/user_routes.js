@@ -11,6 +11,7 @@ router.post('/update/password', auth.user, catchErrors(userController.changePass
 router.post('/delete', auth.user, catchErrors(userController.closeProfile))
 router.post('/follow', auth.user, catchErrors(userController.follow))
 router.post('/accept_follower', auth.user, catchErrors(userController.acceptFollower))
+router.post('/deny_follower', auth.user, catchErrors(userController.denyFollower))
 router.post('/unfollow', auth.user, catchErrors(userController.unfollow))
 
 router.get('/requests', auth.user, catchErrors(userController.requests))

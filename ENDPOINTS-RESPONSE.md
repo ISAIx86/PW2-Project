@@ -158,12 +158,12 @@ Arreglo de elementos.
 ```
 {
     content: {
-        _id: "$_id",                    // ID de la clasificación.
-        title: "$title",                // Título de la clasificación.
-        image: "$image",                // Estampa de la clasificación.
-        created_by: {                   // Información del creador. 
-            image: "$user.image",       // Imagen de perfil del creador.
-            username: "$user.username"  // Nombre de usuario del creador.
+        _id: "$_id",                        // ID de la clasificación.
+        title: "$title",                    // Título de la clasificación.
+        image: "$image",                    // Estampa de la clasificación.
+        created_by: {                       // Información del creador. 
+            image: "$user.image",           // Imagen de perfil del creador.
+            username: "$user.username"      // Nombre de usuario del creador.
         }
     }
 }
@@ -188,11 +188,11 @@ Arreglo de elementos.
 ```
 {
     content: {
-        _id: "$_id",                    // ID del desarrollador.
-        title: "$title",                // Título del desarrollador.
-        created_by: {                   // Información del creador. 
-            image: "$user.image",       // Imagen de perfil del creador.
-            username: "$user.username"  // Nombre de usuario del creador.
+        _id: "$_id",                        // ID del desarrollador.
+        title: "$title",                    // Título del desarrollador.
+        created_by: {                       // Información del creador. 
+            image: "$user.image",           // Imagen de perfil del creador.
+            username: "$user.username"      // Nombre de usuario del creador.
         }
     }
 }
@@ -217,11 +217,11 @@ Arreglo de elementos.
 ```
 {
     content: {
-        _id: "$_id",                    // ID del género.
-        title: "$title",                // Título del género.
-        created_by: {                   // Información del creador. 
-            image: "$user.image",       // Imagen de perfil del creador.
-            username: "$user.username"  // Nombre de usuario del creador.
+        _id: "$_id",                        // ID del género.
+        title: "$title",                    // Título del género.
+        created_by: {                       // Información del creador. 
+            image: "$user.image",           // Imagen de perfil del creador.
+            username: "$user.username"      // Nombre de usuario del creador.
         }
     }
 }
@@ -246,11 +246,11 @@ Arreglo de elementos.
 ```
 {
     content: {
-        _id: "$_id",                    // ID de la plataforma.
-        title: "$title",                // Título de la plataforma.
-        created_by: {                   // Información del creador. 
-            image: "$user.image",       // Imagen de perfil del creador.
-            username: "$user.username"  // Nombre de usuario del creador.
+        _id: "$_id",                        // ID de la plataforma.
+        title: "$title",                    // Título de la plataforma.
+        created_by: {                       // Información del creador. 
+            image: "$user.image",           // Imagen de perfil del creador.
+            username: "$user.username"      // Nombre de usuario del creador.
         }
     }
 }
@@ -259,27 +259,33 @@ Arreglo de elementos.
 ## Reseñas
 
 2. Get by Game
-Arreglo de elementos.
 ```
 {
-    content: [
-        {
-            _id: "$_id",                                            // ID de la reseña.
-            user_card: {                                            // Información del usuario autor.
-                image: "$user.image",                               // Imágen de perfil del usuario.
-                username: "$user.username"                          // Nombre de usuario.
-            },
-            container: {                                            // Contenido de la reseña.
-                content: "$content",                                // Texto de la reseña.
-                rate: "$rate"                                       // Calificación.
-            },
-            article_details: {                                      // Detalles de artículo.
-                publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
-                you_like: "$Boolean",                               // Muestra si diste Like.
-                likes: "$Num.Int"                                   // Cantidad de likes.
-            }
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
         }
-    ]
+        data: [                                                         // ARREGLO de resultados.
+            {
+                _id: "$_id",                                            // ID de la reseña.
+                user_card: {                                            // Información del usuario autor.
+                    image: "$user.image",                               // Imágen de perfil del usuario.
+                    username: "$user.username"                          // Nombre de usuario.
+                },
+                container: {                                            // Contenido de la reseña.
+                    content: "$content",                                // Texto de la reseña.
+                    rate: "$rate"                                       // Calificación.
+                },
+                article_details: {                                      // Detalles de artículo.
+                    publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
+                    you_like: "$Boolean",                               // Muestra si diste Like.
+                    likes: "$Num.Int"                                   // Cantidad de likes.
+                }
+            }
+        ]
+    }   
 }
 ```
 
@@ -288,98 +294,272 @@ Arreglo de elementos.
 3. By Profile
 ```
 {
-    content: [
-        {
-            _id: "$_id",                                            // ID de la publicación.
-            user_card: {                                            // Información del usuario autor.
-                image: "$user.image",                               // Imágen de perfil del usuario.
-                username: "$user.username"                          // Nombre de usuario.
-            },
-            game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
-                name_id: "$game.name_id",                           // Código de nombre del juego.
-                image: "$game.image",                               // Imágen del juego.
-                title: "$game.title"                                // Título del juego.
-            },
-            content: {                                              // Contenido de la publicación.
-                content: "$content",                                // Texto de la publicación.
-                multimedia: [                                       // Contenido multimedia.
-                    {
-                        source: "$multim.directory"                 // Nombre de archivo.
-                    }
-                ]
-            },
-            article_details: {                                      // Detalles de artículo.
-                publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
-                you_like: "$Boolean",                               // Muestra si diste Like.
-                likes: "$Num.Int"                                   // Cantidad de likes.
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
+        },
+        data: [                                                         // ARREGLO de resultados.
+            {
+                _id: "$_id",                                            // ID de la publicación.
+                user_card: {                                            // Información del usuario autor.
+                    image: "$user.image",                               // Imágen de perfil del usuario.
+                    username: "$user.username"                          // Nombre de usuario.
+                },
+                game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
+                    name_id: "$game.name_id",                           // Código de nombre del juego.
+                    image: "$game.image",                               // Imágen del juego.
+                    title: "$game.title"                                // Título del juego.
+                },
+                content: {                                              // Contenido de la publicación.
+                    content: "$content",                                // Texto de la publicación.
+                    multimedia: [                                       // Contenido multimedia.
+                        {
+                            source: "$multim.directory"                 // Nombre de archivo.
+                        }
+                    ]
+                },
+                article_details: {                                      // Detalles de artículo.
+                    publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
+                    you_like: "$Boolean",                               // Muestra si diste Like.
+                    likes: "$Num.Int"                                   // Cantidad de likes.
+                }
             }
-        }
-    ]
+        ]
+    }
 }
 ```
 
 4. By Game
 ```
 {
-    content: [
-        {
-            _id: "$_id",                                            // ID de la publicación.
-            user_card: {                                            // Información del usuario autor.
-                image: "$user.image",                               // Imágen de perfil del usuario.
-                username: "$user.username"                          // Nombre de usuario.
-            },
-            game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
-                name_id: "$game.name_id",                           // Código de nombre del juego.
-                image: "$game.image",                               // Imágen del juego.
-                title: "$game.title"                                // Título del juego.
-            },
-            content: {                                              // Contenido de la publicación.
-                content: "$content",                                // Texto de la publicación.
-                multimedia: [                                       // Contenido multimedia.
-                    {
-                        source: "$multim.directory"                 // Nombre de archivo.
-                    }
-                ]
-            },
-            article_details: {                                      // Detalles de artículo.
-                publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
-                you_like: "$Boolean",                               // Muestra si diste Like.
-                likes: "$Num.Int"                                   // Cantidad de likes.
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
+        },
+        data: [                                                         // ARREGLO de resultados.
+            {
+                _id: "$_id",                                            // ID de la publicación.
+                user_card: {                                            // Información del usuario autor.
+                    image: "$user.image",                               // Imágen de perfil del usuario.
+                    username: "$user.username"                          // Nombre de usuario.
+                },
+                game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
+                    name_id: "$game.name_id",                           // Código de nombre del juego.
+                    image: "$game.image",                               // Imágen del juego.
+                    title: "$game.title"                                // Título del juego.
+                },
+                content: {                                              // Contenido de la publicación.
+                    content: "$content",                                // Texto de la publicación.
+                    multimedia: [                                       // Contenido multimedia.
+                        {
+                            source: "$multim.directory"                 // Nombre de archivo.
+                        }
+                    ]
+                },
+                article_details: {                                      // Detalles de artículo.
+                    publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
+                    you_like: "$Boolean",                               // Muestra si diste Like.
+                    likes: "$Num.Int"                                   // Cantidad de likes.
+                }
             }
-        }
-    ]
+        ]
+    }
 }
 ```
 
 5. Feed
 ```
 {
-    content: [
-        {
-            _id: "$_id",                                            // ID de la publicación.
-            user_card: {                                            // Información del usuario autor.
-                image: "$user.image",                               // Imágen de perfil del usuario.
-                username: "$user.username"                          // Nombre de usuario.
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
+        },
+        data: [                                                         // ARREGLO de resultados.
+            {
+                _id: "$_id",                                            // ID de la publicación.
+                user_card: {                                            // Información del usuario autor.
+                    image: "$user.image",                               // Imágen de perfil del usuario.
+                    username: "$user.username"                          // Nombre de usuario.
+                },
+                game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
+                    name_id: "$game.name_id",                           // Código de nombre del juego.
+                    image: "$game.image",                               // Imágen del juego.
+                    title: "$game.title"                                // Título del juego.
+                },
+                content: {                                              // Contenido de la publicación.
+                    content: "$content",                                // Texto de la publicación.
+                    multimedia: [                                       // Contenido multimedia.
+                        {
+                            source: "$multim.directory"                 // Nombre de archivo.
+                        }
+                    ]
+                },
+                article_details: {                                      // Detalles de artículo.
+                    publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
+                    you_like: "$Boolean",                               // Muestra si diste Like.
+                    likes: "$Num.Int"                                   // Cantidad de likes.
+                }
+            }
+        ]
+    }
+}
+```
+
+## Denuncias
+
+3. Get Report
+LA ESTRUCTURA PUEDE VARIAR:
+Cuando el artículo es una reseña.
+```
+{
+    content: {
+        _id: '$id',                                                 // ID del reporte.
+        reporter_data: {                                            // Información del denunciante.
+            id: '$reporter._id',                                    // ID del denunciante.
+            image: '$reporter.image',                               // Imagen del denunciante.
+            username: '$reporter.username',                         // Nombre de usuario del denunciante.
+            is_deleted: '$reporter.is_deleted'                      // Estado activo del usuario.
+        },
+        author_data: {                                              // Información del autor del artículo.
+            id: '$article_author._id',                              // ID del autor del artículo.
+            image: '$article_author.image',                         // Imagen del autor del artículo.
+            username: '$article_author.username',                   // Nombre de usuario del artículo.
+            is_deleted: '$article_author.is_deleted'                // Estado activo del usuario.
+        },
+        article_type: '$article_details.article_type',              // Tipo de artículo.
+        article_data: {                                             // Información del artículo.
+            game_card: {                                            // Información del juego.
+                name_id: '$game_data.name_id',                      // Código de nombre del juego.
+                image: '$game_data.image',                          // Imágen de título del juego.
+                title: '$game_data.title'                           // Título del juego.
             },
+            container: {                                            // Contenido de la publicación.
+                content: '$article_data.content',                   // Texto de la reseña.
+                rate: '$article_data.rate'                          // Calificación de la reseña.
+            },
+            article_details: {                                      // Detalles de artículo. 
+                publish_datetime: '$article_details.created_at',    // Fecha de publicación del artículo.
+                likes: '$Num.Int'                                   // Cantidad de likes.
+            },
+            is_deleted: '$Boolean'                                  // Estado activo.
+        }
+    }
+}
+```
+Cuando el artículo es una publicación.
+```
+{
+    content: {
+        _id: '$id',                                                 // ID del reporte.
+        reporter_data: {                                            // Información del denunciante.
+            id: '$reporter._id',                                    // ID del denunciante.
+            image: '$reporter.image',                               // Imagen del denunciante.
+            username: '$reporter.username',                         // Nombre de usuario del denunciante.
+            is_deleted: '$reporter.is_deleted'                      // Estado activo del usuario.
+        },
+        author_data: {                                              // Información del autor del artículo.
+            id: '$article_author._id',                              // ID del autor del artículo.
+            image: '$article_author.image',                         // Imagen del autor del artículo.
+            username: '$article_author.username',                   // Nombre de usuario del artículo.
+            is_deleted: '$article_author.is_deleted'                // Estado activo del usuario.
+        },
+        article_type: '$article_details.article_type',              // Tipo de artículo.
+        article_data: {                                             // Información del artículo.
             game_card: {                                            // Información del juego. *Puede no aparecer si la publicación no está relacionada con un juego*.
-                name_id: "$game.name_id",                           // Código de nombre del juego.
-                image: "$game.image",                               // Imágen del juego.
-                title: "$game.title"                                // Título del juego.
+                name_id: '$game_data.name_id',                      // Código de nombre del juego.
+                image: '$game_data.image',                          // Imágen de título del juego.
+                title: '$game_data.title'                           // Título del juego.
             },
-            content: {                                              // Contenido de la publicación.
-                content: "$content",                                // Texto de la publicación.
+            container: {                                            // Contenido de la publicación.
+                content: '$article_data.content',                   // Texto de la publicación.
                 multimedia: [                                       // Contenido multimedia.
                     {
-                        source: "$multim.directory"                 // Nombre de archivo.
+                        source: '$multim.directory'                 // Nombre de archivo.
                     }
                 ]
             },
-            article_details: {                                      // Detalles de artículo.
-                publish_datetime: "$article.publish_datetime",      // Fecha de publicación.
-                you_like: "$Boolean",                               // Muestra si diste Like.
-                likes: "$Num.Int"                                   // Cantidad de likes.
-            }
+            article_details: {                                      // Detalles de artículo. 
+                publish_datetime: '$article_details.created_at',    // Fecha de publicación del artículo.
+                likes: '$Num.Int'                                   // Cantidad de likes.
+            },
+            is_deleted: '$Boolean'                                  // Estado activo.
         }
-    ]
+    }
+}
+```
+
+4. Get Reports
+```
+{
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
+        },
+        data: [
+            {
+                _id: "$_id"                                             // ID del reporte.
+                article_id: '$article_detail._id',                      // ID del artículo denunciado.
+                article_author: {                                       // Información del autor del artículo
+                    id: '$article_author._id',                          // ID del autor del artículo.
+                    image: '$article_author.image',                     // Imagen del autor del artículo.
+                    username: '$article_author.username'                // Nombre de usuario del autor del artículo.
+                },
+                reporter: {                                             // Información del denunciante.
+                    id: '$reporter._id',                                // ID del denunciante.
+                    image: '$reporter.image',                           // Imagen del denunciante.
+                    username: '$reporter.username'                      // Nombre de usuario del denunciante.
+                },
+                report_date: '$created_at',                             // Fecha de la denuncia.
+                article_date: '$article_detail.created_at'              // Fecha de publicación del artículo.
+            }
+        ]
+    }
+}
+```
+
+5. Get Deleted
+```
+{
+    content: {
+        pagination_data: {                                              // Información de paginación.
+            total_docs: "$Num.Int"                                      // Conteo de documentos consultados.
+            page: "$Num.Int"                                            // Página actual.
+            elements: "$Num.Int"                                        // Elementos por página.
+        },
+        data: [
+            {
+                _id: "$_id"                                             // ID del reporte.
+                article_id: '$article_detail._id',                      // ID del artículo denunciado.
+                article_author: {                                       // Información del autor del artículo
+                    id: '$article_author._id',                          // ID del autor del artículo.
+                    image: '$article_author.image',                     // Imagen del autor del artículo.
+                    username: '$article_author.username',               // Nombre de usuario del autor del artículo.
+                    is_deleted: '$Boolean'                              // Estado activo del usuario.
+                },
+                reporter: {                                             // Información del denunciante.
+                    id: '$reporter._id',                                // ID del denunciante.
+                    image: '$reporter.image',                           // Imagen del denunciante.
+                    username: '$reporter.username',                     // Nombre de usuario del denunciante.
+                    is_deleted: '$Boolean'                              // Estado activo del usuario.
+                },
+                report_date: '$created_at',                             // Fecha de la denuncia.
+                article_date: '$article_detail.created_at'              // Fecha de publicación del artículo.
+                solver_data: {                                          // Información del moderador que cerró la denuncia.
+                    id: '$solver._id',                                  // ID del moderador.
+                    image: '$solver.image',                             // Imágen del moderador.
+                    username: '$solver.username'                        // Nombre de usuario del moderador.
+                },
+                justification: '$solved_text'                           // Texto de justificación del cierre.
+            }
+        ]
+    }
 }
 ```

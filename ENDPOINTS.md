@@ -429,7 +429,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Headers:
     -   Authorization: Bearer Token. Token de moderadores. Requerido.
 
-# Reseñas
+## Reseñas
 
 1. Create
     Método: POST
@@ -454,7 +454,7 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
 
-# Publicaciones
+## Publicaciones
 
 1. Create
     Método: POST
@@ -511,3 +511,55 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     -   elem_per_page: Cantidad de elementos por página.
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
+
+## Denuncias
+
+1. Create
+    Método: POST
+    URL: http://localhost:5000/report/create
+    Crea una denuncia hacia una publicación o reseña.
+    Formulario:
+    -   artID: ID del artículo a denunciar. Requerido.
+    Headers:
+    -   Authorization: Bearer Token. Token de usuario. Requerido.
+
+2. Close Report
+    Método: POST
+    URL: http://localhost:5000/report/close
+    Cierra una denuncia atendida. Ésta acción es realizada
+    por el moderador después de tomar acciones sobre las entidades
+    involucradas.
+    Formulario:
+    -   repID: ID de la denuncia a cerrar. Requerido.
+    -   justification: Reporte de las acciones tomadas y comentarios. Requerido.
+    Headers:
+    -   Authorization: Bearer Token. Token de moderador. Requerido.
+
+3. Get Report
+    Método: GET
+    URL: http://localhost:5000/report/get/:_rep_id
+    Obtiene información detallada sobre una denuncia.
+    Parámetros:
+    -   _rep_id: ID de la denuncia a consultar. Requerido.
+    Headers:
+    -   Authorization: Bearer Token. Token de moderador. Requerido.
+
+4. Get Reports
+    Método: GET
+    URL: http://localhost:5000/report/get
+    Obtiene la lista de denuncias pendientes.
+    Query:
+    -   page: Página de contenido.
+    -   elem_per_page: Cantidad de elementos por página.
+    Headers:
+    -   Authorization: Bearer Token. Token de moderador. Requerido.
+
+5. Get Reports
+    Método: GET
+    URL: http://localhost:5000/report/deleted
+    Obtiene la lista de denuncias atendidas.
+    Query:
+    -   page: Página de contenido.
+    -   elem_per_page: Cantidad de elementos por página.
+    Headers:
+    -   Authorization: Bearer Token. Token de moderador. Requerido.

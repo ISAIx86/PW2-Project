@@ -12,7 +12,8 @@ exports.like = async (req, res) => {
     const article = await Article.findOne({_id: artID, is_deleted: false})
     if (!article) throw errorMessages.article['not-found']
 
-    if (article.users_likes.includes(id)) throw errorMessages.article['already-like']
+    if (article.users_likes.includes(id))
+        throw errorMessages.article['already-like']
 
     await Article.updateOne(
         {_id: article.id},
@@ -31,7 +32,8 @@ exports.unlike = async (req, res) => {
     const article = await Article.findOne({_id: artID, is_deleted: false})
     if (!article) throw errorMessages.article['not-found']
 
-    if (!article.users_likes.includes(id)) throw errorMessages.article['already-unlike']
+    if (!article.users_likes.includes(id))
+        throw errorMessages.article['already-unlike']
 
     await Article.updateOne(
         {_id: article.id},

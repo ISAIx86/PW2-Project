@@ -27,6 +27,7 @@
         "follow-target-not-found": "El usuario que busca seguir no se pudo encontrar.",
         "unfollow-target-not-found": "El usuario que busca dejar de seguir no se pudo encontrar.",
         "already-follow": "Ya sigues a este usuario.",
+        "already-requested": "Ya mandaste una petición de seguimiento a este usuario.",
         "already-unfollow": "No sigues a este usuario.",
         "requester-not-found": "No se pudo encontrar el usuario de la petición.",
         "not-found-in-req-list": "No se pudo encontrar el usuario en la lista de peticiones.",
@@ -108,6 +109,7 @@
         "required-author": "El archivo debe tener un autor."
     },
     "reports": {
+        "id-not-found": "No se encontró la denuncia con este ID.",
         "required-article": "La denuncia debe ser dirigida a un artículo.",
         "required-author": "La denuncia debe tener un autor."
     }

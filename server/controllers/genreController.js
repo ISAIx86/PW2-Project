@@ -1,7 +1,11 @@
 const mongoose = require('mongoose')
 const Genre = mongoose.model('generos')
+
+const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
 const {sendResponse} = require('../handlers/answerHandler')
+
+const textSearchLimit = config.appConfig.textSearchBaseLimit
 
 // Create
 exports.create = async (req, res) => {
@@ -33,7 +37,6 @@ exports.modify = async (req, res) => {
         _id: genID,
         is_deleted: false
     })
-
     if (!genre) throw errorMessages.genre['id-not-found']
 
     genre.set({
@@ -50,8 +53,10 @@ exports.delete = async (req, res) => {
 
     const { genID } = req.body
 
-    const genre = await Genre.findById(genID)
-
+    const genre = await Genre.findOne({
+        _id: genID,
+        is_deleted: false
+    })
     if (!genre) throw errorMessages.genre['id-not-found']
 
     genre.set({
@@ -76,6 +81,7 @@ exports.searchByTitle = async (req, res) => {
             {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
             {title: 1}
         )
+        .limit(textSearchLimit)
 
     sendResponse(res, results)
 
@@ -86,7 +92,7 @@ exports.getById = async (req, res) => {
     const _genre_id = req.params._genre_id
 
     const results = await Genre
-        .find(
+        .findOne(
             {_id: _genre_id, is_deleted: false},
             {title: 1, created_by: 1}
         )

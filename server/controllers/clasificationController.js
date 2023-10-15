@@ -1,7 +1,11 @@
 const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
+
+const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
 const {sendResponse} = require('../handlers/answerHandler')
+
+const textSearchLimit = config.appConfig.textSearchBaseLimit
 
 // Create
 exports.create = async (req, res) => {
@@ -36,7 +40,6 @@ exports.modify = async (req, res) => {
         _id: clID,
         is_deleted: false
     })
-
     if (!curr_class) throw errorMessages.classif['not-found']
 
     curr_class.set({
@@ -56,8 +59,10 @@ exports.delete = async (req, res) => {
 
     const { clID } = req.body
 
-    const curr_class = await Classification.findById(clID)
-
+    const curr_class = await Classification.findOne({
+        _id: clID,
+        is_deleted: false
+    })
     if (!curr_class) throw errorMessages.classif['not-found']
 
     curr_class.set({
@@ -75,13 +80,15 @@ exports.searchByTitle = async (req, res) => {
 
     const { text_input } = req.body
 
-    if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
+    if (typeof text_input === 'undefined' | text_input === "")
+        throw errorMessages.general['empty-serach']
     
     const results = await Classification
         .find(
             {title: {$regex: `.*${text_input}.*`}, is_deleted: false},
             {image:1, title:1}
         )
+        .limit(textSearchLimit)
 
     sendResponse(res, results)
 
@@ -92,7 +99,7 @@ exports.getById = async (req, res) => {
     const _class_id = req.params._class_id
 
     const result = await Classification
-        .find(
+        .findOne(
             {_id: _class_id, is_deleted: false},
             {title: 1, image: 1, created_by: 1}
         )

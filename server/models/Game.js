@@ -133,8 +133,4 @@ game_schema.methods.setCover = function setCover (filename) {
     this.cover = filename
 }
 
-game_schema.methods.setRating = function setRating (value) {
-    this.rating = value
-}
-
 module.exports = mongoose.model('juegos', game_schema)
