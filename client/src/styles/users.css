@@ -7,17 +7,9 @@ body {
     font-family: 'Exo 2', sans-serif;
 }
 
-hr {
-    border-color: #C8C8C8 !important;
-    border-width: 5px !important;
-}
 
 h1 {
     margin-bottom: 0;
-}
-
-h2 {
-    margin-left: 20px;
 }
 
 .header {
@@ -29,6 +21,13 @@ h2 {
     height: 10%;
 }
 
+.userprofile-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    padding: 10px;
+}
 
 .post-container {
     display: flex;
@@ -36,7 +35,21 @@ h2 {
     flex-direction: column;
     border-radius: 10px;
 }
-
+.private-profile-container{
+    height: 100vh;
+}
+.private-profile {
+    position: relative;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    font-size: large;
+}
+.private{
+    font-size: 5em;
+}
 .post-menu {
     display: flex;
     flex-direction: column;
@@ -78,10 +91,42 @@ h2 {
     font-weight: bold;
 }
 
-.right-info, .left-info {
+.description {
+    margin-left: 5px;
+}
+
+.right-info {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
+}
+
+.left-info {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+.btn-follow {
+    background-color: #27184F;
+    color: #f2f2f2;
+    width: 6em;
+}
+
+.btn-follow:hover {
+    background-color: #5132a7;
+    color: #f2f2f2;
+}
+
+.btn-following {
+    background-color: #5132a7;
+    color: #f2f2f2;
+    width: 6em;
+}
+
+.btn-following:hover {
+    background-color: #27184F;
+    color: #f2f2f2;
 }
 
 .post-body {
@@ -105,12 +150,22 @@ h2 {
     display: none;
 }
 
-.like-button, .comment-button {
+.like-button,
+.comment-button {
     border: none;
-    transition: transform 0.2s; 
-  }
-  
-  .like-button:hover, .comment-button:hover {
+    transition: transform 0.2s;
+}
+
+.like-button:hover,
+.comment-button:hover {
     transform: scale(1.2);
-  }
-  
+}
+
+.profileuser-img {
+    height: 100px;
+    width: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 5px 0 5px;
+    background: #1d1b31;
+}

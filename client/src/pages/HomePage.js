@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import * as BiIco from 'react-icons/bi';
+import * as AiIco from 'react-icons/ai';
+
 import '../styles/home.css';
 
 
@@ -34,7 +36,7 @@ function Home() {
         avatar: 'https://th.bing.com/th/id/OIP.DMDfV6N9jhYjyQCLGLlH5QHaLH?pid=ImgDet&rs=1',
       },
       content: 'Otra publicación interesante.',
-      media: 'https://th.bing.com/th/id/R.24d86c1cc073d119639092931f49ba20?rik=lxtvGV4Y8ioSEw&pid=ImgRaw&r=0',
+      media: '',
       likes: 5,
       comments: 3,
       timestamp: 'Hace 3 horas',
@@ -60,14 +62,16 @@ function Home() {
                   <span className='username'>{post.user.name}</span>
                 </div>
                 <div className='right-info'>
-                  <div className='game-info'>
-                    <span className='username'>{post.game.name}</span>
-                    <img
-                      src={post.game.avatar}
-                      alt={`Foto del juego ${post.game.name}`}
-                      className='profile-img'
-                    />
-                  </div>
+                  {post.game.name && post.game.avatar && (
+                    <div className='game-info'>
+                      <span className='username'>{post.game.name}</span>
+                      <img
+                        src={post.game.avatar}
+                        alt={`Foto del juego ${post.game.name}`}
+                        className='profile-img'
+                      />
+                    </div>
+                  )}
                   <div className='dropdown'>
                     <BiIco.BiDotsVerticalRounded className='dropdown-toggle drop-dots' data-bs-toggle='dropdown' aria-expanded='false' />
                     <ul className='dropdown-menu'>
@@ -80,16 +84,18 @@ function Home() {
               <div className='post-body'>
                 <p className='post-content'>{post.content}</p>
                 <div className='d-flex justify-content-center'>
-                  <img src={post.media} alt='Media' className='post-media' />
+                  {post.media && ( 
+                    <img src={post.media} alt='Media' className='post-media' />
+                  )}
                 </div>
               </div>
               <div className='post-actions post-bottom'>
                 <div className='post-activity'>
                   <button className='like-button'>
-                    <i className='fa fa-heart' /> {post.likes}
+                    <AiIco.AiOutlineLike/> {post.likes}
                   </button>
                   <button className='comment-button'>
-                    <i className='fa fa-comment' /> {post.comments}
+                    <BiIco.BiComment/> {post.comments}
                   </button>
                 </div>
                 <span className='timestamp'>{post.timestamp}</span>
