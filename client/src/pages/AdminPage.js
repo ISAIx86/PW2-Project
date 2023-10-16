@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import * as BiIco from 'react-icons/bi';
 import '../styles/home.css';
+import { Button } from 'bootstrap';
 
 function Admin() {
   const [posts, setPosts] = useState([
@@ -55,8 +56,9 @@ function Admin() {
         <h1>BYTE-STREAM</h1>
     </div>
     <div className="container d-flex justify-content-center h-100">
-        <div className="login col-12 col-md-10 col-sm-5 col-xs-10">
-            <h2 className='mt-1'>Usuarios</h2>
+        <div className="login col-12 col-md-10 col-sm-10 col-xs-12">
+        <h2 className='mt-1'>Usuarios</h2>
+        <hr />
             {posts.map((post) => (
             <div key={post.id}>
               <table class="table table-bordered">
@@ -68,6 +70,7 @@ function Admin() {
       <th scope="col">Denunciante</th>
       <th scope="col">Fecha de denuncia</th>
       <th scope="col">Fecha de publicación</th>
+      <th scope="col">Reporte</th>
     </tr>
   </thead>
   <tbody>
@@ -82,6 +85,7 @@ function Admin() {
                     className='profile-img'></img> </td>
       <td>{post.report}</td>
       <td>{post.timestamp}</td>
+      <button  className="login_form-button col-lg-14 col-xs-12 col-md-14">Ver reporte</button>
     </tr>
   </tbody>
 </table>
