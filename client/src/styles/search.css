@@ -1,0 +1,40 @@
+.input-container {
+    position: relative;
+}
+
+.input-container .icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    font-size: 20px;
+}
+
+.input-container input {
+    background-color: #C8C8C8;
+    padding-left: 2em;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    font-size: 20px;
+}
+
+.btn-search {
+    background-color: transparent;
+    color: #333;
+    border: 3px solid transparent;
+    padding: 5px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.btn-search:hover{
+    border-color: #926bff;
+
+}
+
+.content-hidden{
+    display: none;
+}
