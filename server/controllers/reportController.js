@@ -4,6 +4,7 @@ const Article = mongoose.model('articulos')
 const User = mongoose.model('usuarios')
 
 const errorMessages = require('../handlers/error-messages.json')
+const { modlogger } = require('../middlewares/logger')
 const { sendResponse } = require('../handlers/answerHandler')
 
 // Create
@@ -32,6 +33,9 @@ exports.closeReport = async (req, res) => {
     const { repID, justification } = req.body
     const id = req.payload.id
 
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
+
     const report = await Report.findOne({
         _id: repID,
         is_deleted: false
@@ -39,13 +43,14 @@ exports.closeReport = async (req, res) => {
     if (!report) throw errorMessages.reports['id-not-found']
 
     report.set({
-        solved_by: id,
+        solved_by: moderator.id,
         solved_text: justification,
         is_deleted: true
     })
 
     report.save()
 
+    modlogger.log('handle', `mod (${moderator.username}), report:${report.id}, justification: ${report.justification}.`)
     sendResponse(res, "Reporte cerrado.")
 
 }

@@ -7,8 +7,10 @@ node_modules
 .pnp.js
 
 # testing
+logfiles
 /coverage
 .vscode
+*.log*
 storage
 resources
 

@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
 const Article = mongoose.model('articulos')
+
+const { modlogger } = require('../middlewares/logger')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { sendResponse } = require('../handlers/answerHandler')
 
 // Updates
 exports.like = async (req, res) => {
@@ -41,5 +43,27 @@ exports.unlike = async (req, res) => {
     )
 
     sendResponse(res, "Like retirado.")
+
+}
+
+exports.killArticle = async (req, res) => {
+
+    const { artID } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
+
+    const article = await Article.findOne({_id: artID, is_deleted: false})
+    if (!article) throw errorMessages.article['not-found']
+
+    article.set({
+        is_deleted: true
+    })
+
+    await article.save()
+
+    modlogger.log('delete', `mod (${moderator.username}) deleted article: ${article.id}.`)
+    sendResponse(res, "Artículo eliminado.")
 
 }

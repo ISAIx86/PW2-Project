@@ -6,7 +6,8 @@ const Regex = require('../handlers/regex')
 
 const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const { sendResponse } = require('../handlers/answerHandler')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 
@@ -144,6 +145,33 @@ exports.closeProfile = async (req, res) => {
 
     await user.save()
 
+    sendResponse(res, "Perfil cerrado exitosamente.")
+
+}
+
+exports.killProfile = async (req, res) => {
+
+    const { userID } = req.body
+    const id = req.payload.id
+
+    const user = await User.findOne({
+        _id: userID,
+        is_deleted: false
+    })
+    const moderator = await User.findOne({
+        _id: id,
+        is_deleted: false  
+    })
+    if (!user) throw errorMessages.users['id-not-found']
+    if (!moderator) throw errorMessages.users['not-found']
+
+    user.set({
+        is_deleted: true
+    })
+
+    await user.save()
+
+    modlogger.log('delete', `mod: (${moderator.username}) deleted user: ${user.username}.`)
     sendResponse(res, "Perfil cerrado exitosamente.")
 
 }

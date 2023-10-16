@@ -4,7 +4,8 @@ const User = mongoose.model('usuarios')
 
 const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const { sendResponse } = require('../handlers/answerHandler')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 
@@ -22,6 +23,9 @@ exports.create = async (req, res) => {
         platforms
     } = req.body
     const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const game = new Game({
         name_id,
@@ -45,6 +49,7 @@ exports.create = async (req, res) => {
 
     await game.save()
 
+    modlogger.log('create', `mod (${moderator.username}) created game: ${game.name_id}.`)
     sendResponse(res, "Juego agregado exitosamente.")
 
 }
@@ -98,6 +103,10 @@ exports.modify = async (req, res) => {
 exports.delete = async (req, res) => {
 
     const { gameID } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const game = await Game.findOne({
         _id: gameID,
@@ -111,6 +120,7 @@ exports.delete = async (req, res) => {
 
     game.save()
 
+    modlogger.log('delete', `mod (${moderator.username}) deleted game: ${game.name_id}.`)
     sendResponse(res, "Juego eliminado exitosamente.")
 
 }

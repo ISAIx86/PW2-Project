@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const Developer = mongoose.model('desarrolladores')
+const User = mongoose.model('usuarios')
 
 const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const { sendResponse } = require('../handlers/answerHandler')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 
@@ -13,6 +15,10 @@ exports.create = async (req, res) => {
     const {
         title
     } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const dev = new Developer({
         title,
@@ -21,6 +27,7 @@ exports.create = async (req, res) => {
 
     await dev.save()
 
+    modlogger.log('create', `mod (${moderator.username}) created developer: ${dev.title}.`)
     sendResponse(res, "Desarrollador añadida exitosamente.")
 
 }
@@ -52,6 +59,10 @@ exports.modify = async (req, res) => {
 exports.delete = async (req, res) => {
 
     const { devID } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const dev = await Developer.findOne({
         _id: devID,
@@ -65,6 +76,7 @@ exports.delete = async (req, res) => {
 
     dev.save()
 
+    modlogger.log('delete', `mod (${moderator.username}) deleted developer: ${dev.title}.`)
     sendResponse(res, "Desarrollador eliminado exitosamente.")
     
 }

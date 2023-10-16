@@ -1,3 +1,5 @@
+const { logger } = require('../middlewares/logger')
+
 exports.catchErrors = (fn) => {
     return function (req, res, next) {
         fn(req, res, next).catch((err) => {
@@ -18,7 +20,8 @@ exports.mongooseErrors = (err, req, res, next) => {
     const errorKeys = Object.keys(err.errors)
     let message = ""
     errorKeys.forEach((key) => (message += err.errors[key].message + ", "))
-    message = message.substr(0, message.length - 2)
+    message = message.substr(0, message.length - 2),
+    logger.log('error',message)
     res.status(400).json({
         status: 'error',
         content: message
@@ -35,14 +38,21 @@ exports.developmentErrors = (err, req, res, next) => {
             stack: err.stack
         }
     }
+    logger.log('error', JSON.stringify(errorDetails.content))
     res.status(err.status || 500).json(errorDetails)
 }
 
 exports.productionErrors = (err, req, res, next) => {
-    res.status(err.status || 500).json({
-        status: "error",
-        content: "Internal Server Error."
-    })
+    const errorDetails = {
+        status: 'error',
+        content: {
+            message: err.message,
+            status: err.status,
+            stack: err.stack
+        }
+    }
+    logger.log('error', JSON.stringify(errorDetails.content))
+    res.status(err.status || 500).json({errorDetails})
 }
 
 exports.notFound = (req, res, next) => {

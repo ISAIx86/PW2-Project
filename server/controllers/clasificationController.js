@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
+const User = mongoose.model('usuarios')
 
 const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const { sendResponse } = require('../handlers/answerHandler')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 
@@ -13,17 +15,22 @@ exports.create = async (req, res) => {
     const {
         title
     } = req.body
+    const id = req.payload.id
 
-    const new_class = new Classification({
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
+
+    const clasif = new Classification({
         title,
         created_by: req.payload.id
     })
 
     if (req.files && req.files.image)
-        await new_class.uploadImage(req.files.image)
+        await clasif.uploadImage(req.files.image)
 
-    await new_class.save()
+    await clasif.save()
 
+    modlogger.log('create', `mod (${moderator.username}) created classification: ${clasif.title}.`)
     sendResponse(res, "Clasificación creada exitosamente.")
 
 }
@@ -36,20 +43,20 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
-    const curr_class = await Classification.findOne({
+    const clasif = await Classification.findOne({
         _id: clID,
         is_deleted: false
     })
-    if (!curr_class) throw errorMessages.classif['not-found']
+    if (!clasif) throw errorMessages.classif['not-found']
 
-    curr_class.set({
-        title: typeof title !== 'undefined' ? title : curr_class.title
+    clasif.set({
+        title: typeof title !== 'undefined' ? title : clasif.title
     })
 
     if (req.files && req.files.image)
-        await curr_class.uploadImage(req.files.image)
+        await clasif.uploadImage(req.files.image)
 
-    await curr_class.save()
+    await clasif.save()
 
     sendResponse(res, "Clasificación modificada exitosamente.")
 
@@ -58,19 +65,24 @@ exports.modify = async (req, res) => {
 exports.delete = async (req, res) => {
 
     const { clID } = req.body
+    const id = req.payload.id
 
-    const curr_class = await Classification.findOne({
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
+
+    const clasif = await Classification.findOne({
         _id: clID,
         is_deleted: false
     })
-    if (!curr_class) throw errorMessages.classif['not-found']
+    if (!clasif) throw errorMessages.classif['not-found']
 
-    curr_class.set({
+    clasif.set({
         is_deleted: true
     })
 
-    curr_class.save()
+    clasif.save()
 
+    modlogger.log('delete', `mod (${moderator.username}) deleted classification: ${clasif.title}.`)
     sendResponse(res, "Clasificación eliminada exitosamente.")
 
 }

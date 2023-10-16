@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const Genre = mongoose.model('generos')
+const User = mongoose.model('usuarios')
 
 const config = require('../config')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const { sendResponse } = require('../handlers/answerHandler')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 
@@ -13,6 +15,10 @@ exports.create = async (req, res) => {
     const {
         title
     } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const genre = new Genre({
         title,
@@ -21,6 +27,7 @@ exports.create = async (req, res) => {
 
     await genre.save()
 
+    modlogger.log('create', `mod (${moderator.username}) created genre: ${genre.title}.`)
     sendResponse(res, "Género creado exitosamente.")
 
 }
@@ -52,6 +59,10 @@ exports.modify = async (req, res) => {
 exports.delete = async (req, res) => {
 
     const { genID } = req.body
+    const id = req.payload.id
+
+    const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
+    if (!moderator) throw errorMessages.users['id-not-found']
 
     const genre = await Genre.findOne({
         _id: genID,
@@ -65,6 +76,7 @@ exports.delete = async (req, res) => {
 
     genre.save()
 
+    modlogger.log('delete', `mod (${moderator.username}) deleted genre: ${genre.title}.`)
     sendResponse(res, "Género eliminado exitosamente.")
     
 }

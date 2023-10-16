@@ -1,5 +1,8 @@
 require('dotenv').config()
 const config = require('./config')
+const { logger } = require('./middlewares/logger')
+
+const appConfig = config.appConfig
 
 // Conexión con MongoDB
 const mongoose = require('mongoose')
@@ -9,11 +12,11 @@ mongoose.connect(config.dbConfig.url, {
 })
 
 mongoose.connection.on('error', (err) => {
-    console.log("Error de conexión con Mongoosse: " + err.message)
+    logger.log('info', `Error de conexión con MongoDB: ${err.message}`)
 })
 
 mongoose.connection.once('open', () => {
-    console.log("Conectado con MongoDB!")
+    logger.log('info', `¡Conectado con MongoDB!`)
 })
 
 // Traer modelos
@@ -33,6 +36,6 @@ require('./models/Platform')
 // Levantar la API
 const app = require('./app')
 
-app.listen(5000, () => {
-    console.log("Servidor activo y escuchando el puerto 5000")
+app.listen(appConfig.port, () => {
+    logger.log('info', `Servidor corriendo y escuchando el puerto ${appConfig.port}`)
 })
