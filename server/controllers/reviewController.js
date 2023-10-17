@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const Article = mongoose.model('articulos')
 const Review = mongoose.model('resenas')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
@@ -51,27 +52,27 @@ exports.create = async (req, res) => {
         author: id,
         game: game_id,
     })
-    // if (is_reviewed) throw errorMessages.review['already-review']
+    if (is_reviewed) throw errorMessages.review['already-review']
 
     const article = new Article({
         article_type: 'review',
         author: id
     })
     const review = new Review({
-        _id: article.id,
+        _id: article._id,
         rate,
         content,
         author: id,
         game: game_id
     })
 
-    // await review.save()
-    // await article.save()
+    await article.save()
+    await review.save()
 
     game.set({
         rating: await updateRating(game.id)
     })
-    // await game.save()
+    await game.save()
     
     sendResponse(res, "Reseña publicada con éxito.")
 
