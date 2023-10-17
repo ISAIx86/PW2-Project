@@ -6,10 +6,6 @@ const genre_schema = new mongoose.Schema({
         type: String,
         required: errorMessages.genre['required-name']
     },
-    games: {
-        type: [mongoose.Types.ObjectId],
-        ref: 'juegos'
-    },
     created_by: {
         type: mongoose.Types.ObjectId,
         required: errorMessages.genre['required-author'],
