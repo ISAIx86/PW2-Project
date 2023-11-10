@@ -17,6 +17,7 @@ router.post('/unfollow', auth.user, catchErrors(userController.unfollow))
 
 router.get('/requests', auth.user, catchErrors(userController.requests))
 router.get('/profile/:_username?', auth.user, catchErrors(userController.profile))
+router.get('/profile_info', auth.user, catchErrors(userController.fillUpdateForm))
 router.post('/search/username', auth.user, catchErrors(userController.searchUsername))
 
 module.exports = router

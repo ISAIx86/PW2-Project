@@ -412,6 +412,20 @@ exports.profile = async (req, res) => {
 
 }
 
+exports.fillUpdateForm = async (req, res) => {
+
+    const id = req.payload.id
+
+    const results = await User
+        .findOne(
+            {_id: id, is_deleted: false},
+            {_id:0, nombres:1, apellidos:1, username:1, image:1, fecha_nac:1, email:1}
+        )
+
+    sendResponse(res, results)
+    
+}
+
 exports.searchUsername = async (req, res) => {
 
     const { text_input } = req.body
