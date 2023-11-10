@@ -138,12 +138,20 @@ axios.get(`http://localhost:5000/games/details/${name_id}`)
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
 
-12. Perfil
+12. Profile
     Método: GET
     URL: http://localhost:5000/user/profile/:_username?
     Obtiene información de perfil de un usuario.
     Parámetros:
     -   _username: Nombre de usuario del perfil buscado. Opcional.
+    Headers:
+    -   Authorization: Bearer Token. Token de usuario. Requerido.
+
+13. Account Data
+    Método: GET
+    URL: http://localhost:5000/user/profile_info
+    Obtiene la información completa de la cuenta para
+    llenar el formulario de edición de perfil.
     Headers:
     -   Authorization: Bearer Token. Token de usuario. Requerido.
 

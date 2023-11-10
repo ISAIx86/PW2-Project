@@ -82,6 +82,20 @@ Arreglo de elementos.
 }
 ```
 
+13. Account Data
+```
+{
+    content: {
+        nombres: "$nombres",            // Nombres reales del usuario.
+        apellidos: "$apellidos",        // Apellidos del usuario.
+        username: "$username",          // Nombre de usuario.
+        image: "$image",                // Imagen de perfil del usuario.
+        fecha_nac: "$fecha_nac",        // Fecha de nacimiento.
+        email: "$email"                 // Correo electrónico.
+    }
+}
+```
+
 ## Juegos
 
 6. Get One
