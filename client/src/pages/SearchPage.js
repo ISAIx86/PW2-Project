@@ -96,7 +96,7 @@ function Search() {
   const handleFollow = () => {
     setFollowing(!following);
   }
-
+///search/username
   return (
     <div className='d-flex flex-column vh-100 align-items-center'>
       <div className='header col-12 position-sticky'>

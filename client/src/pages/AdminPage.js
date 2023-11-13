@@ -61,7 +61,7 @@ function Admin() {
         <hr />
             {posts.map((post) => (
             <div key={post.id}>
-              <table class="table table-bordered">
+              <table className="table table-bordered">
   <thead>
     <tr>
       <th scope="col">ID</th>

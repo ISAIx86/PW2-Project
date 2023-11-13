@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import makeToast from '../plugins/Toaster'
 
@@ -7,7 +7,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import '../styles/login.css'
 
 function Login() {
-
+    const navigate = useNavigate();
     function handleSubmit(event) {
 
         event.preventDefault()
@@ -22,8 +22,9 @@ function Login() {
 
         axios.post('http://localhost:5000/user/login', userlog)
         .then((response) => {
-            makeToast('success', response.data.content.message)
-            //localStorage.setItem('CC_Token', response.data.token)
+            makeToast('success', response.data.content.message);
+                        localStorage.setItem('CC_Token', response.data.content.token)
+            navigate('/home');
         })
         .catch((err) => {
             if (!err.response && !err.response.data && !err.response.data.content)
