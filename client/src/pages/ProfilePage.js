@@ -23,7 +23,7 @@ function Profile() {
 
 		if (token) {
 			axios
-				.get(`http://localhost:5000/user/profile_info/`, {
+				.get(`http://localhost:5000/user/profile_info`, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -167,7 +167,7 @@ function Profile() {
 					<hr />
 					<div style={{ display: 'flex', justifyContent: 'center' }}>
 						<img
-							src={image || "./user-icon.svg"}
+							src={`http://localhost:5000/public/img_users/${image}` || "./user-icon.svg"}
 							alt="Imagen de usuario"
 							className="user-image"
 						/>
