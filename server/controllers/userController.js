@@ -431,8 +431,8 @@ exports.searchUsername = async (req, res) => {
     const { text_input } = req.body
     const id = req.payload.id
 
-    if (typeof text_input === 'undefined' | text_input === "")
-        throw errorMessages.general['empty-serach']
+    // if (typeof text_input === 'undefined' | text_input === "")
+    //     throw errorMessages.general['empty-serach']
 
     const results = await User
         .find(
@@ -442,7 +442,6 @@ exports.searchUsername = async (req, res) => {
                 is_following: {$in: [{$toObjectId: id}, "$followers"]}
             }
         )
-        .limit(textSearchLimit)
 
     sendResponse(res, results)
 
