@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
+import makeToast from '../plugins/Toaster'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -10,7 +12,8 @@ import '../styles/users.css';
 import '../styles/search.css';
 
 function Search() {
- const [activeTab, setActiveTab] = useState('Juegos');
+
+  const [activeTab, setActiveTab] = useState('Juegos');
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -45,30 +48,9 @@ function Search() {
       timestamp: 'Hace 3 horas',
     },
   ]);
-
-  const [user, setUser] = useState([
-    {
-      id: 1,
-      name: 'Usuario 1',
-      avatar: 'https://th.bing.com/th/id/OIP.3hckg2BT4mldMAuuo6TUrQHaHa?w=202&h=202&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-      desc: 'Descripción del usuario',
-      priv: true,
-    },
-    {
-      id: 2,
-      name: 'Usuario 2',
-      avatar: 'https://th.bing.com/th/id/OIP.3hckg2BT4mldMAuuo6TUrQHaHa?w=202&h=202&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-      desc: 'Descripción del usuario',
-      priv: true,
-    },
-    {
-      id: 3,
-      name: 'Usuario 3',
-      avatar: 'https://th.bing.com/th/id/OIP.3hckg2BT4mldMAuuo6TUrQHaHa?w=202&h=202&c=7&r=0&o=5&dpr=1.3&pid=1.7',
-      desc: 'Descripción del usuario',
-      priv: true,
-    },
-  ]);
+  const [search, setSearch] = useState([]);
+  //image:1, username:1, descrip:1,
+  const [user, setUser] = useState([]);
   const [videogame, setVideogame] = useState([
     {
       id: 1,
@@ -96,7 +78,51 @@ function Search() {
   const handleFollow = () => {
     setFollowing(!following);
   }
-///search/username
+
+
+  const handleSearch = () => {
+    const token = localStorage.getItem('CC_Token');
+    if (token) {
+      axios
+        .post(
+          `http://localhost:5000/user/search/username`,
+          { text_input: `${search}` },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((response) => {
+          if (response.data.content) {
+            setUser(response.data.content || '');
+          }
+        })
+        .catch((err) => {
+          if (!err.response || !err.response.data || !err.response.data.content) {
+            makeToast('error', 'Server no responde!');
+          } else {
+            makeToast('error', err.response.data.content);
+          }
+        });
+    } else {
+      console.log('No se encontró un token en el Local Storage');
+    }
+  };
+  ///search/username
+  useEffect(() => {
+    // This effect will be triggered whenever 'search' changes
+    handleSearch();
+  }, [search]);
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      // Call the function that handles the search, e.g., handleSearch()
+      handleSearch();
+    }
+  };
+
+
   return (
     <div className='d-flex flex-column vh-100 align-items-center'>
       <div className='header col-12 position-sticky'>
@@ -107,7 +133,14 @@ function Search() {
           <div className='userprofile-container mb-2'>
             <div className='input-container d-flex w-100'>
               <BiIco.BiSearch className='icon' />
-              <input className='w-100' type='text' placeholder='Buscar' />
+              <input
+                className='w-100'
+                type='text'
+                placeholder='Buscar'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
             </div>
           </div>
           <div className='row buttons'>
@@ -137,7 +170,7 @@ function Search() {
             </div>
           </div>
           <div className={`d-flex flex-column mt-2 ${activeTab === 'Publicaciones' ? 'content-publicaciones' : 'content-hidden'}`} >
-          {activeTab === 'Publicaciones' && posts.map((post) => (
+            {activeTab === 'Publicaciones' && posts.map((post) => (
               <>
                 <div key={post.id} className='post-container mb-4'>
                   <div className='post-top'>
@@ -194,28 +227,29 @@ function Search() {
             ))}
           </div>
           <div className={`d-flex flex-column ${activeTab === 'Usuarios' ? 'content-usuarios' : 'content-hidden'}`}>
-          {activeTab === 'Usuarios' && user.map((user) => (
+
+            {activeTab === 'Usuarios' && user.map((user) => (
               <>
                 <div className='userprofile-container mb-2'>
                   <div className='user-info left-info'>
                     <img
-                      src={user.avatar}
-                      alt={`Foto de perfil de ${user.name}`}
+                      src={`http://localhost:5000/public/img_users/${user.image}` || "./user-icon.svg"}
+                      alt={`Foto de perfil de ${user.username}`}
                       className='profileuser-img'
                     />
                     <div className='d-flex flex-column mt-1'>
-                      <span className='username'>{user.name}</span>
-                      <span className='description'>{user.desc}</span>
+                      <span className='username'>{user.username}</span>
+                      <span className='description'>{user.img}</span>
                     </div>
 
 
                   </div>
                   <div className='user-actions right-info'>
                     <button
-                      className={`btn ${following ? 'btn-following' : 'btn-follow'}`}
+                      className={`btn ${user.is_following ? 'btn-following' : 'btn-follow'}`}
                       onClick={handleFollow}
                     >
-                      {following ? 'Siguiendo' : 'Seguir'}
+                      {user.is_following ? 'Siguiendo' : 'Seguir'}
                     </button>
                     <div className='dropdown'>
                       <BiIco.BiDotsVerticalRounded className='dropdown-toggle drop-dots' data-bs-toggle='dropdown' aria-expanded='false' />
@@ -230,7 +264,7 @@ function Search() {
             ))}
           </div>
           <div className={`d-flex flex-column ${activeTab === 'Juegos' ? 'content-juegos' : 'content-hidden'}`}>
-          {activeTab === 'Juegos' && videogame.map((videogame) => (
+            {activeTab === 'Juegos' && videogame.map((videogame) => (
               <>
                 <div className='userprofile-container mb-2'>
                   <div className='user-info left-info'>
