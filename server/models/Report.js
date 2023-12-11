@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
-const errorMessages = require('../handlers/error-messages.json')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
+// -- SCHEMA --
 const report_schema = new mongoose.Schema({
     article: {
         type: mongoose.Types.ObjectId,

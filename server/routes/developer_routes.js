@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const {catchErrors} = require('../handlers/errorHandler')
+const { catchErrors } = require('../handlers/errorHandling/errorHandler')
 const developerController = require('../controllers/developerController')
 const auth = require('../middlewares/auth')
 

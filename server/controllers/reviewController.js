@@ -3,8 +3,9 @@ const Article = mongoose.model('articulos')
 const Review = mongoose.model('resenas')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
-const errorMessages = require('../handlers/error-messages.json')
+
 const {sendResponse} = require('../handlers/answerHandler')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 const updateRating = async (game_id) => {
 

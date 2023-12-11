@@ -1,4 +1,4 @@
-const { logger } = require('../middlewares/logger')
+const { logger } = require('../../middlewares/logger')
 
 exports.catchErrors = (fn) => {
     return function (req, res, next) {

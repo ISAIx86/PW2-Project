@@ -1,10 +1,11 @@
-const config = require('../config')
 const mongoose = require('mongoose')
-const uploader = require('../middlewares/uploader')
+const config = require('../config')
 const fs = require('fs')
+const uploader = require('../middlewares/uploader')
 const date = require('date-and-time')
-const errorMessages = require('../handlers/error-messages.json')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
+// -- SCHEMA --
 const multimedia_schema = new mongoose.Schema({
     directory: {
         type: String,
@@ -21,6 +22,7 @@ const multimedia_schema = new mongoose.Schema({
     }
 })
 
+// -- METHODS --
 multimedia_schema.methods.upload = async function upload(post_id, index, multim) {
 
     const filename = `post_${post_id}_${index}_${date.format(new Date(), 'YYYY-MM-DD-HH-mm-ss')}`

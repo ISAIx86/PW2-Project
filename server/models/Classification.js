@@ -1,9 +1,10 @@
-const config = require('../config')
-const uploader = require('../middlewares/uploader')
-const fs = require('fs')
 const mongoose = require('mongoose')
-const errorMessages = require('../handlers/error-messages.json')
+const config = require('../config')
+const fs = require('fs')
+const uploader = require('../middlewares/uploader')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
+// -- SCHEMA --
 const classification_schema = new mongoose.Schema({
     title: {
         type: String,
@@ -24,6 +25,7 @@ const classification_schema = new mongoose.Schema({
     }
 })
 
+// -- METHODS
 classification_schema.methods.uploadImage = async function uploadImage (img_file) {
 
     const path = await uploader.uploadInDestiny(

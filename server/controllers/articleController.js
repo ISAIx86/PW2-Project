@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const Article = mongoose.model('articulos')
 
-const { modlogger } = require('../middlewares/logger')
-const errorMessages = require('../handlers/error-messages.json')
 const { sendResponse } = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 // Updates
 exports.like = async (req, res) => {

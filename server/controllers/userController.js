@@ -4,12 +4,9 @@ const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
 const Regex = require('../handlers/regex')
 
-const config = require('../config')
-const errorMessages = require('../handlers/error-messages.json')
-const { modlogger } = require('../middlewares/logger')
 const { sendResponse } = require('../handlers/answerHandler')
-
-const textSearchLimit = config.appConfig.textSearchBaseLimit
+const { modlogger } = require('../middlewares/logger')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 // Create
 exports.register = async (req, res) => {

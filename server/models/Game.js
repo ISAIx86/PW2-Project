@@ -1,10 +1,11 @@
-const config = require('../config')
 const mongoose = require('mongoose')
-const uploader = require('../middlewares/uploader')
+const config = require('../config')
 const fs = require('fs')
+const uploader = require('../middlewares/uploader')
 const Regex = require('../handlers/regex')
-const errorMessages = require('../handlers/error-messages.json')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
+// -- SCHEMA --
 const game_schema = new mongoose.Schema({
     name_id: {
         type: String,
@@ -97,6 +98,7 @@ const game_schema = new mongoose.Schema({
     timestamps: true
 })
 
+// -- METHODS --
 game_schema.methods.uploadImage = async function uploadImage (type, img_file) {
 
     if (type === 'title') {

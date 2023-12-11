@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
 const User = mongoose.model('usuarios')
 
-const config = require('../config')
-const errorMessages = require('../handlers/error-messages.json')
-const { modlogger } = require('../middlewares/logger')
 const { sendResponse } = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const config = require('../config')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 const textSearchLimit = config.appConfig.textSearchBaseLimit
 

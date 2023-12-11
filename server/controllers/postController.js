@@ -5,8 +5,8 @@ const Game = mongoose.model('juegos')
 const Multimedia = mongoose.model('multimedias')
 const User = mongoose.model('usuarios')
 
+const { sendResponse } = require('../handlers/answerHandler')
 const errorMessages = require('../handlers/error-messages.json')
-const {sendResponse} = require('../handlers/answerHandler')
 
 // Create
 exports.create = async (req, res) => {

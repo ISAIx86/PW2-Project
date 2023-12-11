@@ -3,9 +3,9 @@ const Report = mongoose.model('denuncias')
 const Article = mongoose.model('articulos')
 const User = mongoose.model('usuarios')
 
-const errorMessages = require('../handlers/error-messages.json')
-const { modlogger } = require('../middlewares/logger')
 const { sendResponse } = require('../handlers/answerHandler')
+const { modlogger } = require('../middlewares/logger')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 // Create
 exports.create = async (req, res) => {

@@ -1,11 +1,12 @@
-const config= require('../config')
 const mongoose = require('mongoose')
-const Regex = require('../handlers/regex')
-const uploader = require('../middlewares/uploader')
+const config= require('../config')
 const fs = require('fs')
+const uploader = require('../middlewares/uploader')
+const Regex = require('../handlers/regex')
 const date = require('date-and-time')
-const errorMessages = require('../handlers/error-messages.json')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
+// -- SCHEMA --
 const user_schema = new mongoose.Schema({
     nombres: {
         type: String,
@@ -104,6 +105,7 @@ const user_schema = new mongoose.Schema({
     timestamps: true
 })
 
+// -- METHODS --
 user_schema.methods.uploadImage = async function uploadImage(img_file) {
 
     const filename = `${this.id}_${date.format(new Date(), 'YYYY-MM-DD-HH-mm-ss')}`
