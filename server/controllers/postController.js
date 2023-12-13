@@ -5,8 +5,9 @@ const Game = mongoose.model('juegos')
 const Multimedia = mongoose.model('multimedias')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
-const errorMessages = require('../handlers/error-messages.json')
+const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 // Create
 exports.create = async (req, res) => {
@@ -16,6 +17,8 @@ exports.create = async (req, res) => {
         content
     } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     if (typeof game_id !== 'undefined' && game_id !== "") {
         const game = await Game.findOne({_id: game_id, is_deleted: false})
@@ -55,6 +58,8 @@ exports.create = async (req, res) => {
     await post.save()
     await article.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Publicación exitosa.")
 
 }
@@ -64,6 +69,8 @@ exports.delete = async (req, res) => {
 
     const { postID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const article = await Article.find({_id: postID, is_deleted: false, article_type: 'post'})
     if (!article) throw errorMessages.article['not-found']
@@ -79,6 +86,8 @@ exports.delete = async (req, res) => {
     })
 
     await article.save()
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, "Publicación eliminada.")
 
@@ -98,6 +107,8 @@ exports.getByUser = async (req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const user = await User.findOne({username: _username, is_deleted: false})
     if (!user) throw errorMessages.users['not-found']
@@ -173,6 +184,8 @@ exports.getByUser = async (req, res) => {
                 ]
             }}
         ])
+
+    await MongooseManager.disconnect()
     
     sendResponse(res, results)
 
@@ -191,6 +204,8 @@ exports.getByGame = async (req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const game = await Game.findOne({name_id: _game_id, is_deleted: false})
     if (!game) throw errorMessages.games['nameid-not-found']
@@ -268,6 +283,8 @@ exports.getByGame = async (req, res) => {
             }}
         ])
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -284,6 +301,8 @@ exports.getFeed = async (req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const user = await User.findOne({_id: id, is_deleted: false})
     if (!user) throw errorMessages.users['id-not-found']
@@ -366,6 +385,8 @@ exports.getFeed = async (req, res) => {
                 ]
             }}
         ])
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, results)
 

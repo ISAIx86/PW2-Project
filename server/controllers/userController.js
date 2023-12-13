@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 const User = mongoose.model('usuarios')
 const sha256 = require('js-sha256')
 const jwt = require('jwt-then')
-const Regex = require('../handlers/regex')
+const Regex = require('../handlers/regex.json')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const errorMessages = require('../handlers/errorHandling/error-messages.json')
@@ -21,6 +22,8 @@ exports.register = async (req, res) => {
         conf_password
     } = req.body
 
+    await MongooseManager.connect()
+
     const user = new User({
         nombres,
         apellidos,
@@ -32,7 +35,7 @@ exports.register = async (req, res) => {
 
     await user.validate()
 
-    if (user.password && !Regex.passwords.test(user.password))
+    if (user.password && !new RegExp(Regex.passwords).test(user.password))
         throw errorMessages.users['bad-password']
     if (user.password !== conf_password)
         throw errorMessages.users['bad-confirmation']
@@ -45,6 +48,8 @@ exports.register = async (req, res) => {
         await user.uploadImage(req.files.image)
 
     await user.save()
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, `Ya estas registrado, ${username}. ¡Disftuta tu navegación!`)
 
@@ -64,6 +69,8 @@ exports.update = async (req, res) => {
         default_img
     } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const user = await User.findOne({
         _id: id,
@@ -90,6 +97,8 @@ exports.update = async (req, res) => {
 
     await user.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Datos actualizados.")
 
 }
@@ -103,6 +112,8 @@ exports.changePassword = async (req, res) => {
     } = req.body
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const user = await User.findOne({
         _id: id,
         is_deleted: false
@@ -111,7 +122,7 @@ exports.changePassword = async (req, res) => {
 
     if (sha256(password + process.env.SALT) !== user.password)
         throw errorMessages.users['wrong-actual-password']
-    if (!Regex.passwords.test(new_password))
+    if (!new RegExp(Regex.passwords).test(new_password))
         throw errorMessages.users['bad-new-password']
     if (new_password !== conf_password)
         throw errorMessages.users['bad-confirmation']
@@ -122,6 +133,8 @@ exports.changePassword = async (req, res) => {
 
     await user.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Contraseña actualizada exitosamente.")
 
 }
@@ -129,6 +142,8 @@ exports.changePassword = async (req, res) => {
 exports.closeProfile = async (req, res) => {
 
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const user = await User.findOne({
         _id: id,
@@ -142,6 +157,8 @@ exports.closeProfile = async (req, res) => {
 
     await user.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Perfil cerrado exitosamente.")
 
 }
@@ -150,6 +167,8 @@ exports.killProfile = async (req, res) => {
 
     const { userID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const user = await User.findOne({
         _id: userID,
@@ -168,6 +187,8 @@ exports.killProfile = async (req, res) => {
 
     await user.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('delete', `mod: (${moderator.username}) deleted user: ${user.username}.`)
     sendResponse(res, "Perfil cerrado exitosamente.")
 
@@ -179,6 +200,8 @@ exports.follow = async (req, res) => {
     const id = req.payload.id
 
     if (target_id === id) throw errorMessages.users['follow-itself']
+
+    await MongooseManager.connect()
 
     const target_user = await User
         .findOne({_id: target_id, is_deleted: false})
@@ -215,6 +238,8 @@ exports.follow = async (req, res) => {
             throw errorMessages.users['already-follow']
     }
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, target_user.is_private ? "Solicitud de seguimiento enviada." : "Seguimiento exitoso.")
 
 }
@@ -225,6 +250,8 @@ exports.acceptFollower = async (req, res) => {
     const id = req.payload.id
 
     if (req_id === id) throw errorMessages.users['follow-itself']
+
+    await MongooseManager.connect()
 
     const requester = await User
         .findOne({_id: req_id, is_deleted: false})
@@ -251,6 +278,8 @@ exports.acceptFollower = async (req, res) => {
             {$push: {following: user.id}}
         )
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Petición aceptada exitosamente.")
 
 }
@@ -261,6 +290,8 @@ exports.denyFollower = async (req, res) => {
     const id = req.payload.id
 
     if (req_id === id) throw errorMessages.users['follow-itself']
+
+    await MongooseManager.connect()
 
     const requester = await User
         .findOne({_id: req_id, is_deleted: false})
@@ -277,6 +308,8 @@ exports.denyFollower = async (req, res) => {
             {$pull: {requests: requester.id}}
         )
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Petición denegada.")
 
 }
@@ -285,6 +318,8 @@ exports.unfollow = async (req, res) => {
 
     const { target_id } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const target_user = await User
         .findOne({_id: target_id, is_deleted: false})
@@ -307,6 +342,8 @@ exports.unfollow = async (req, res) => {
     if (!target_user.followers.includes(user.id) || !user.following.includes(target_user.id))
         throw errorMessages.users['already-unfollow']
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Se dejó de seguir al usuario.")
 
 }
@@ -319,6 +356,8 @@ exports.login = async (req, res) => {
         password
     } = req.body
 
+    await MongooseManager.connect()
+
     const user = await User.findOne({
         email,
         password: sha256(password + process.env.SALT),
@@ -327,6 +366,8 @@ exports.login = async (req, res) => {
     if (!user) throw errorMessages.users['wrong-password']
 
     const token = await jwt.sign({id: user.id}, process.env.SECRET)
+
+    await MongooseManager.disconnect()
 
     sendResponse(
         res,
@@ -345,6 +386,8 @@ exports.loginMod = async (req, res) => {
         password
     } = req.body
 
+    await MongooseManager.connect()
+
     const user = await User.findOne({
         email,
         password: sha256(password + process.env.SALT),
@@ -354,6 +397,8 @@ exports.loginMod = async (req, res) => {
     if (!user.is_mod) throw errorMessages.users['unauthorized-mod']
 
     const token = await jwt.sign({id: user.id}, process.env.MOD_SECRET)
+
+    await MongooseManager.disconnect()
 
     sendResponse(
         res,
@@ -375,6 +420,8 @@ exports.profile = async (req, res) => {
         filters = {_id: id, is_deleted: false}
     else
         filters = {username: _username, is_deleted: false}
+
+    await MongooseManager.connect()
     
     const results = await User
         .findOne(
@@ -405,6 +452,8 @@ exports.profile = async (req, res) => {
         )
     if (!results) throw errorMessages.users['not-found']
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -413,11 +462,15 @@ exports.fillUpdateForm = async (req, res) => {
 
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const results = await User
         .findOne(
             {_id: id, is_deleted: false},
             {_id:0, nombres:1, apellidos:1, username:1, image:1, fecha_nac:1, email:1}
         )
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, results)
     
@@ -428,8 +481,10 @@ exports.searchUsername = async (req, res) => {
     const { text_input } = req.body
     const id = req.payload.id
 
-    // if (typeof text_input === 'undefined' | text_input === "")
-    //     throw errorMessages.general['empty-serach']
+    if (typeof text_input === 'undefined' | text_input === "")
+        throw errorMessages.general['empty-serach']
+
+    await MongooseManager.connect()
 
     const results = await User
         .find(
@@ -440,6 +495,8 @@ exports.searchUsername = async (req, res) => {
             }
         )
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -448,6 +505,8 @@ exports.requests = async (req, res) => {
 
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const user = await User
         .findOne(
             {_id: id, is_deleted: false},
@@ -455,6 +514,8 @@ exports.requests = async (req, res) => {
         )
         .populate('requests', 'image username descrip')
     if (!user) throw errorMessages.users['id-not-found']
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, {results: user.requests})
 

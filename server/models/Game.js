@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const config = require('../config')
 const fs = require('fs')
 const uploader = require('../middlewares/uploader')
-const Regex = require('../handlers/regex')
+const Regex = require('../handlers/regex.json')
 const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
 // -- SCHEMA --
@@ -18,7 +18,7 @@ const game_schema = new mongoose.Schema({
                 message: errorMessages.games['taken-nameid']
             },
             {
-                validator: v => Regex.game_nid.test(v),
+                validator: v => new RegExp(Regex.game_nid).test(v),
                 message: errorMessages.games['bad-nameid']
             }
         ],

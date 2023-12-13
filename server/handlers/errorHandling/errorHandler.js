@@ -1,3 +1,4 @@
+const MongooseManager = require('../../handlers/mongooseManager')
 const { logger } = require('../../middlewares/logger')
 
 exports.catchErrors = (fn) => {
@@ -11,6 +12,7 @@ exports.catchErrors = (fn) => {
             } else {
                 next(err)
             }
+            MongooseManager.disconnect()
         })
     }
 }
@@ -39,6 +41,7 @@ exports.developmentErrors = (err, req, res, next) => {
         }
     }
     logger.log('error', JSON.stringify(errorDetails.content))
+    MongooseManager.disconnect()
     res.status(err.status || 500).json(errorDetails)
 }
 
@@ -52,6 +55,7 @@ exports.productionErrors = (err, req, res, next) => {
         }
     }
     logger.log('error', JSON.stringify(errorDetails.content))
+    MongooseManager.disconnect()
     res.status(err.status || 500).json({errorDetails})
 }
 

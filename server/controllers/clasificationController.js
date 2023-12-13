@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Classification = mongoose.model('clasificaciones')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const config = require('../config')
@@ -17,6 +18,8 @@ exports.create = async (req, res) => {
     } = req.body
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
 
@@ -30,6 +33,8 @@ exports.create = async (req, res) => {
 
     await clasif.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('create', `mod (${moderator.username}) created classification: ${clasif.title}.`)
     sendResponse(res, "Clasificación creada exitosamente.")
 
@@ -42,6 +47,8 @@ exports.modify = async (req, res) => {
         clID,
         title
     } = req.body
+
+    await MongooseManager.connect()
 
     const clasif = await Classification.findOne({
         _id: clID,
@@ -58,6 +65,8 @@ exports.modify = async (req, res) => {
 
     await clasif.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Clasificación modificada exitosamente.")
 
 }
@@ -66,6 +75,8 @@ exports.delete = async (req, res) => {
 
     const { clID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -82,6 +93,8 @@ exports.delete = async (req, res) => {
 
     clasif.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('delete', `mod (${moderator.username}) deleted classification: ${clasif.title}.`)
     sendResponse(res, "Clasificación eliminada exitosamente.")
 
@@ -91,6 +104,8 @@ exports.delete = async (req, res) => {
 exports.searchByTitle = async (req, res) => {
 
     const { text_input } = req.body
+
+    await MongooseManager.connect()
 
     if (typeof text_input === 'undefined' | text_input === "")
         throw errorMessages.general['empty-serach']
@@ -102,6 +117,8 @@ exports.searchByTitle = async (req, res) => {
         )
         .limit(textSearchLimit)
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -110,6 +127,8 @@ exports.getById = async (req, res) => {
 
     const _class_id = req.params._class_id
 
+    await MongooseManager.connect()
+
     const result = await Classification
         .findOne(
             {_id: _class_id, is_deleted: false},
@@ -117,6 +136,8 @@ exports.getById = async (req, res) => {
         )
         .populate('created_by', 'image username')
     if (!result) throw errorMessages.classif['not-found']
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, results)
 

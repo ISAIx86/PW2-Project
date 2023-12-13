@@ -3,6 +3,7 @@ const Report = mongoose.model('denuncias')
 const Article = mongoose.model('articulos')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const errorMessages = require('../handlers/errorHandling/error-messages.json')
@@ -12,6 +13,8 @@ exports.create = async (req, res) => {
     
     const { artID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
     
     const article = await Article.findOne({_id: artID, is_deleted: false})
     if (!article) throw errorMessages.article['not-found']
@@ -23,6 +26,8 @@ exports.create = async (req, res) => {
 
     await report.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Denuncia enviada.")
 
 }
@@ -32,6 +37,8 @@ exports.closeReport = async (req, res) => {
 
     const { repID, justification } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -50,6 +57,8 @@ exports.closeReport = async (req, res) => {
 
     report.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('handle', `mod (${moderator.username}), report:${report.id}, justification: ${report.justification}.`)
     sendResponse(res, "Reporte cerrado.")
 
@@ -60,6 +69,8 @@ exports.getReport = async (req, res) => {
 
     const _rep_id = req.params._rep_id
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const report = await Report
         .findOne({_id: _rep_id, is_deleted: false})
@@ -193,6 +204,8 @@ exports.getReport = async (req, res) => {
             }}
         ])
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -208,6 +221,8 @@ exports.getReports = async (req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const results = await Report
         .aggregate([
@@ -261,6 +276,8 @@ exports.getReports = async (req, res) => {
             }}
         ])
 
+    MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -276,6 +293,8 @@ exports.getDeleted = async(req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const results = await Report
         .aggregate([
@@ -342,6 +361,8 @@ exports.getDeleted = async(req, res) => {
                 ]
             }}
         ])
+
+    MongooseManager.disconnect()
 
     sendResponse(res, results)
 

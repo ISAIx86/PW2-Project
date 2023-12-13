@@ -4,6 +4,7 @@ const Review = mongoose.model('resenas')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const {sendResponse} = require('../handlers/answerHandler')
 const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
@@ -46,6 +47,8 @@ exports.create = async (req, res) => {
     } = req.body
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const game = await Game.findOne({_id: game_id, is_deleted: false})
     if (!game) throw errorMessages.games['id-not-found']
 
@@ -74,6 +77,8 @@ exports.create = async (req, res) => {
         rating: await updateRating(game.id)
     })
     await game.save()
+
+    await MongooseManager.disconnect()
     
     sendResponse(res, "Reseña publicada con éxito.")
 
@@ -83,6 +88,8 @@ exports.delete = async (req, res) => {
 
     const { revID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const article = await Article.findOne({_id: revID, is_deleted: false, article_type: 'review'})
     if (!article) throw errorMessages.article['not-found']
@@ -104,6 +111,8 @@ exports.delete = async (req, res) => {
         {rating: await updateRating(review.game)}
     )
 
+    MongooseManager.disconnect()
+
     sendResponse(res, "Reseña eliminada.")
 
 }
@@ -122,6 +131,8 @@ exports.getByGame = async (req, res) => {
     if (elem_per_page < 10) elem_per_page = 10
 
     const offset = ((page - 1) * elem_per_page)
+
+    await MongooseManager.connect()
 
     const game = await Game.findOne({name_id: _game_id, is_deleted: false})
     if (!game) throw errorMessages.games['nameid-not-found']
@@ -168,6 +179,8 @@ exports.getByGame = async (req, res) => {
             ]
         }}
     ])
+
+    await MongooseManager.disconnect
 
     sendResponse(res, results)
 

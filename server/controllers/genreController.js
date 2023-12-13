@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Genre = mongoose.model('generos')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const config = require('../config')
@@ -17,6 +18,8 @@ exports.create = async (req, res) => {
     } = req.body
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
 
@@ -26,6 +29,8 @@ exports.create = async (req, res) => {
     })
 
     await genre.save()
+
+    await MongooseManager.disconnect()
 
     modlogger.log('create', `mod (${moderator.username}) created genre: ${genre.title}.`)
     sendResponse(res, "Género creado exitosamente.")
@@ -40,6 +45,8 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
+    await MongooseManager.connect()
+
     const genre = await Genre.findOne({
         _id: genID,
         is_deleted: false
@@ -52,6 +59,8 @@ exports.modify = async (req, res) => {
 
     await genre.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Género modificado exitosamente.")
 
 }
@@ -60,6 +69,8 @@ exports.delete = async (req, res) => {
 
     const { genID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -76,6 +87,8 @@ exports.delete = async (req, res) => {
 
     genre.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('delete', `mod (${moderator.username}) deleted genre: ${genre.title}.`)
     sendResponse(res, "Género eliminado exitosamente.")
     
@@ -86,6 +99,8 @@ exports.searchByTitle = async (req, res) => {
 
     const { text_input } = req.body
 
+    await MongooseManager.connect()
+
     if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
     
     const results = await Genre
@@ -95,6 +110,8 @@ exports.searchByTitle = async (req, res) => {
         )
         .limit(textSearchLimit)
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -103,6 +120,8 @@ exports.getById = async (req, res) => {
 
     const _genre_id = req.params._genre_id
 
+    await MongooseManager.connect()
+
     const results = await Genre
         .findOne(
             {_id: _genre_id, is_deleted: false},
@@ -110,6 +129,8 @@ exports.getById = async (req, res) => {
         )
         .populate('created_by', 'image username')
     if (!results) throw errorMessages.genre['id-not-found']
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, results)
 

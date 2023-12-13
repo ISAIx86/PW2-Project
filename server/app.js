@@ -28,7 +28,7 @@ app.use('/report', require('./routes/report_routes'))
 
 // Configurar Handlers de errores en este apartado
 const errorHandlers = require('./handlers/errorHandling/errorHandler')
-app.use(errorHandlers.notFound);
+app.use(errorHandlers.notFound)
 app.use(errorHandlers.mongooseErrors)
 if (process.env.ENV === "DEVELOPMENT")
     app.use(errorHandlers.developmentErrors)

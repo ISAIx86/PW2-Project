@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const config= require('../config')
 const fs = require('fs')
 const uploader = require('../middlewares/uploader')
-const Regex = require('../handlers/regex')
+const Regex = require('../handlers/regex.json')
 const date = require('date-and-time')
 const errorMessages = require('../handlers/errorHandling/error-messages.json')
 
@@ -11,7 +11,7 @@ const user_schema = new mongoose.Schema({
     nombres: {
         type: String,
         validate: {
-            validator: v => Regex.names.test(v),
+            validator: v => new RegExp(Regex.names).test(v),
             message: errorMessages.users['bad-name']
         },
         required: errorMessages.users['required-name']
@@ -19,7 +19,7 @@ const user_schema = new mongoose.Schema({
     apellidos: {
         type: String,
         validate: {
-            validator: v => Regex.names.test(v),
+            validator: v => new RegExp(Regex.names).test(v),
             message: errorMessages.users['bad-last']
         },
         required: errorMessages.users['required-last']
@@ -28,7 +28,7 @@ const user_schema = new mongoose.Schema({
         type: String,
         validate: [
             {
-                validator: v => Regex.usernames.test(v),
+                validator: v => new RegExp(Regex.usernames).test(v),
                 message: errorMessages.users['bad-username']
             },
             {
@@ -59,7 +59,7 @@ const user_schema = new mongoose.Schema({
         type: String,
         validate: [
             {
-                validator: v => Regex.emails.test(v),
+                validator: v => new RegExp(Regex.emails).test(v),
                 message: errorMessages.users['bad-email']
             },
             {

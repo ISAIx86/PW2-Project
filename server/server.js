@@ -5,19 +5,9 @@ const { logger } = require('./middlewares/logger')
 const appConfig = config.appConfig
 
 // Conexión con MongoDB
-const mongoose = require('mongoose')
-mongoose.connect(config.dbConfig.url, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true
-})
+const MongooseManager = require('./handlers/mongooseManager')
 
-mongoose.connection.on('error', (err) => {
-    logger.log('info', `Error de conexión con MongoDB: ${err.message}`)
-})
-
-mongoose.connection.once('open', () => {
-    logger.log('info', `¡Conectado con MongoDB!`)
-})
+MongooseManager.test()
 
 // Traer modelos
 require('./models/User')

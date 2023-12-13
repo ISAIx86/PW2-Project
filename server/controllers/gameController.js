@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Game = mongoose.model('juegos')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const config = require('../config')
@@ -23,6 +24,8 @@ exports.create = async (req, res) => {
         platforms
     } = req.body
     const id = req.payload.id
+    
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -49,6 +52,8 @@ exports.create = async (req, res) => {
 
     await game.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('create', `mod (${moderator.username}) created game: ${game.name_id}.`)
     sendResponse(res, "Juego agregado exitosamente.")
 
@@ -68,6 +73,8 @@ exports.modify = async (req, res) => {
         developers,
         platforms
     } = req.body
+
+    await MongooseManager.connect()
 
     const game = await Game.findOne({
         _id: gameID,
@@ -96,6 +103,8 @@ exports.modify = async (req, res) => {
 
     await game.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Juego modificado exitosamente.")
 
 }
@@ -104,6 +113,8 @@ exports.delete = async (req, res) => {
 
     const { gameID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -120,6 +131,8 @@ exports.delete = async (req, res) => {
 
     game.save()
 
+    await MongooseManager.disconnect()
+
     modlogger.log('delete', `mod (${moderator.username}) deleted game: ${game.name_id}.`)
     sendResponse(res, "Juego eliminado exitosamente.")
 
@@ -129,6 +142,8 @@ exports.follow = async (req, res) => {
 
     const { target_id } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const game = await Game
         .findOne({_id: target_id, is_deleted: false})
@@ -151,6 +166,8 @@ exports.follow = async (req, res) => {
     if (user.following_games.includes(game.id)) throw errorMessages.games['already-follow']
     if (game.followers.includes(user.id)) throw errorMessages.games['already-follow']
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Seguimiento de juego exitoso.")
 
 }
@@ -159,6 +176,8 @@ exports.unfollow = async (req, res) => {
 
     const { target_id } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const game = await Game
         .findOne({_id: target_id})
@@ -181,6 +200,8 @@ exports.unfollow = async (req, res) => {
     if (!user.following_games.includes(game.id)) throw errorMessages.games['already-unfollow']
     if (!game.followers.includes(user.id)) throw errorMessages.games['already-unfollow']
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Juego eliminado de tus juegos seguidos.")
 
 }
@@ -190,6 +211,8 @@ exports.getOne = async (req, res) => {
 
     const name_id = req.params._game_id
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const game = await Game
         .findOne(
@@ -215,6 +238,8 @@ exports.getOne = async (req, res) => {
         .populate('classification', 'title image -_id')
     if (!game) throw errorMessages.games['not-found']
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, game)
 
 }
@@ -223,6 +248,8 @@ exports.searchByName = async (req, res) => {
 
     const { text_input } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     if (typeof text_input === 'undefined' | text_input === "") throw errorMessages.general['empty-serach']
 
@@ -236,6 +263,8 @@ exports.searchByName = async (req, res) => {
         )
         .populate('developers', 'title -_id')
         .limit(textSearchLimit)
+
+    MongooseManager.disconnect()
     
     sendResponse(res, results)
 

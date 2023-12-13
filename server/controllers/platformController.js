@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Platform = mongoose.model('plataformas')
 const User = mongoose.model('usuarios')
 
+const MongooseManager = require('../handlers/mongooseManager')
 const { sendResponse } = require('../handlers/answerHandler')
 const { modlogger } = require('../middlewares/logger')
 const config = require('../config')
@@ -17,6 +18,8 @@ exports.create = async (req, res) => {
     } = req.body
     const id = req.payload.id
 
+    await MongooseManager.connect()
+
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
 
@@ -26,6 +29,8 @@ exports.create = async (req, res) => {
     })
 
     await plat.save()
+
+    await MongooseManager.disconnect()
 
     modlogger.log('create', `mod (${moderator.username}) created platform: ${plat.title}.`)
     sendResponse(res, "Plataforma añadida exitosamente.")
@@ -40,6 +45,8 @@ exports.modify = async (req, res) => {
         title
     } = req.body
 
+    await MongooseManager.connect()
+
     const plat = await Platform.findOne({
         _id: platID,
         is_deleted: false
@@ -52,6 +59,8 @@ exports.modify = async (req, res) => {
 
     await plat.save()
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, "Plataforma modificada exitosamente.")
 
 }
@@ -60,6 +69,8 @@ exports.delete = async (req, res) => {
 
     const { platID } = req.body
     const id = req.payload.id
+
+    await MongooseManager.connect()
 
     const moderator = await User.findOne({_id: id, is_mod: true, is_deleted: false})
     if (!moderator) throw errorMessages.users['id-not-found']
@@ -76,6 +87,8 @@ exports.delete = async (req, res) => {
 
     plat.save()
 
+    MongooseManager.disconnect()
+
     modlogger.log('delete', `mod (${moderator.username}) deleted platform: ${plat.title}.`)
     sendResponse(res, "Plataforma eliminada exitosamente.")
     
@@ -85,6 +98,8 @@ exports.delete = async (req, res) => {
 exports.searchByTitle = async (req, res) => {
 
     const { text_input } = req.body
+
+    await MongooseManager.connect()
 
     if (typeof text_input === 'undefined' | text_input === "")
         throw errorMessages.general['empty-serach']
@@ -96,6 +111,8 @@ exports.searchByTitle = async (req, res) => {
         )
         .limit(textSearchLimit)
 
+    await MongooseManager.disconnect()
+
     sendResponse(res, results)
 
 }
@@ -104,6 +121,8 @@ exports.getById = async (req, res) => {
 
     const _plat_id = req.params._plat_id
 
+    await MongooseManager.connect()
+
     const results = await Platform
         .findOne(
             {_id: _plat_id, is_deleted: false},
@@ -111,6 +130,8 @@ exports.getById = async (req, res) => {
         )
         .populate('created_by', 'image username')
     if (!results) throw  errorMessages.platform['id-not-found']
+
+    await MongooseManager.disconnect()
 
     sendResponse(res, results)
 
