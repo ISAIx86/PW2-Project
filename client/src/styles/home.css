@@ -108,9 +108,9 @@ h2 {
 .like-button, .comment-button {
     border: none;
     transition: transform 0.2s; 
-  }
+}
   
-  .like-button:hover, .comment-button:hover {
+.like-button:hover, .comment-button:hover {
     transform: scale(1.2);
-  }
+}
   

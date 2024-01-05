@@ -11,52 +11,64 @@ export const SidebarData = [
         icon: <io5Ico.IoPeopleSharp />,
         cName: 'nav-text'
     },
+
     {
         title: 'Publicación',
         path: '/add',
         icon: <BiIco.BiAddToQueue />,
-        cName: 'nav-text'
+        cName: 'nav-text',
+        requiresAuth: true, // Solo mostrar si el usuario ha iniciado sesión
     },
+
     {
-        title: 'Inicio',
+        title: 'Home',
         path: '/home',
         icon: <BiIco.BiHomeAlt2 />,
         cName: 'nav-text'
     },
+
     {
         title: 'Perfil',
         path: '/profile',
         icon: <AiIco.AiOutlineUser />,
         cName: 'nav-text'
     },
+
     {
         title: 'Notificaciones',
         path: '/notifications',
         icon: <AiIco.AiOutlineBell />,
-        cName: 'nav-text'
+        cName: 'nav-text',
+        requiresAuth: true, // Solo mostrar si el usuario ha iniciado sesión
     },
+
     {
         title: 'Chats',
         path: '/chats',
         icon: <BiIco.BiMessageRounded />,
-        cName: 'nav-text'
+        cName: 'nav-text',
+        requiresAuth: true, // Solo mostrar si el usuario ha iniciado sesión
     },
+
     {
         title: 'Búsqueda',
         path: '/search',
         icon: <AiIco.AiOutlineSearch />,
         cName: 'nav-text'
     },
+
     {
         title: 'Ajustes',
         path: '/settings',
         icon: <BsIco.BsGear />,
         cName: 'nav-text'
     },
+
     {
         title: 'Salir',
         path: '/login',
         icon: <io5Ico.IoExitOutline />,
-        cName: 'nav-text'
+        cName: 'nav-text',
+        requiresAuth: true, // Solo mostrar si el usuario ha iniciado sesión
     },
 ]

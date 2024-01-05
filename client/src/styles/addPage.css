@@ -1,0 +1,110 @@
+.input-container {
+    position: relative;
+}
+
+.input-container .icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    font-size: 20px;
+}
+
+.input-container input {
+    background-color: #C8C8C8;
+    padding-left: 2em;
+    border-radius: 25px;
+    font-weight: bold;
+    border: none;
+    font-size: 20px;
+}
+
+.btn-seccion {
+    background-color: transparent;
+    color: #333;
+    border: 3px solid transparent;
+    padding: 5px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.btn-seccion:hover{
+    border-color: #926bff;
+
+}
+
+.content-hidden{
+    display: none;
+}
+
+.profile-img-videogame {
+    height: 70px;
+    width: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin: 0 5px 0 5px;
+    background: #1d1b31;
+}
+
+.username {
+    font-size: 18px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.description{
+    font-size: 14px;
+}
+
+.scrollable-div {
+    overflow: scroll;
+    max-height: 170px;
+    overflow-x: hidden
+}
+
+.post-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 10px 10px 10px;
+
+}
+
+
+
+
+
+.addMedia-button {
+
+    border: none;
+    transition: transform 0.2s; 
+    font-size: 24px;
+    margin-right: 8px;
+}
+  
+.addMedia-button:hover {
+    transform: scale(1.2);
+}
+
+
+
+.horizontal-scrollable {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.media-preview {
+    flex: 0 0 auto;
+    width: 14.28%; 
+    box-sizing: border-box;
+    padding: 0 5px;
+}
+
+.selected-image-preview,
+.selected-video-preview {
+    max-width: 100%;
+    height: auto;
+}
+
