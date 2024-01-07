@@ -5,7 +5,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import * as BiIco from 'react-icons/bi';
 import * as AiIco from 'react-icons/ai';
 
-import { BiImageAdd, BiSolidFilePlus, } from "react-icons/bi";
+import { BiSearch, BiImageAdd, BiTrash, BiSolidStar, BiStar  } from "react-icons/bi";
 
 import '../styles/addPage.css';
 
@@ -14,6 +14,7 @@ function Add() {
     const [activeTab, setActiveTab] = useState('Post');
     const [selectedMedia, setSelectedMedia] = useState([]);
     const [comment, setComment] = useState('');
+    const [rating, setRating] = useState(0);
 
     const handleMediaUpload = (e) => {
         const files = Array.from(e.target.files);
@@ -26,17 +27,23 @@ function Add() {
         setSelectedMedia(updatedMedia);
     };
 
+
+    const handleStarClick = (value) => {
+        setRating(value);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
     
         // Aquí puedes realizar acciones con la imagen y el archivo seleccionados, como subirlos a un servidor.
-        // También puedes incluir el comentario (comment) en la lógica de tu aplicación.
+        // También puedes incluir el comentario (comment) 
     
         // Limpia los estados después de manejar la carga.
         setSelectedMedia(null);
         setComment('');
+        setRating(null);
     };
-
+    
     const [videogame, setVideogame] = useState([
 
         {
@@ -104,8 +111,8 @@ function Add() {
                         <div className='col-6 d-flex justify-content-center p-0'>
 
                             <button
-                                className={`col-10 btn btn-seccion ${activeTab === 'Reseña' ? 'bg-light' : ''}`}
-                                onClick={() => setActiveTab('Reseña')}
+                                className={`col-10 btn btn-seccion ${activeTab === 'Resena' ? 'bg-light' : ''}`}
+                                onClick={() => setActiveTab('Resena')}
                             >
                                 Reseña
 
@@ -124,7 +131,7 @@ function Add() {
                             <>
                                 <form className='Creacion-Post'>
 
-                                    <div className='container d-flex justify-content-center mt-2 mb-5 h-100'>
+                                    <div className='container d-flex justify-content-center mt-2 mb-4 h-100'>
 
                                         <div className='col-12 col-md-10 col-sm-10 col-xs-12'>
 
@@ -278,6 +285,7 @@ function Add() {
                                         </div>
 
                                     </div>
+
                                 </form>
 
                             </>
@@ -287,13 +295,97 @@ function Add() {
 
                     </div>
 
-                    <div className={`d-flex flex-column mt-2 ${activeTab === 'Reseña' ? 'content-reseña' : 'content-hidden'}`} >
+                    <div className={`d-flex flex-column mt-2 ${activeTab === 'Resena' ? 'content-resena' : 'content-hidden'}`} >
         
-                        {activeTab === 'Reseña' &&  (
+                        {activeTab === 'Resena' &&  (
                             
                             <>
-                                <h2 className='mt-3'>reseña</h2>
-                                <hr />
+                                <form className='Creacion-Resena'>
+
+                                    <div className='container d-flex justify-content-center mt-2 mb-4 h-100'>
+
+                                        <div className='col-12 col-md-10 col-sm-10 col-xs-12'>
+
+                                            <div className='userprofile-container mb-2'>
+
+                                                <div className='input-container d-flex w-100'>
+                                                    <BiIco.BiSearch className='icon' />
+                                                    <input className='w-100' type='text' placeholder='Buscar' />
+                                                </div> 
+                                                
+                                            </div>
+
+
+
+                                            <div className='scrollable-div mb-5'>
+
+                                                {videogame.map((videogame) => (
+                                                    <div className='videogame-info left-info mb-3'>
+
+                                                        <img
+                                                            src={videogame.avatar}
+                                                            alt={`Foto de perfil de ${videogame.name}`}
+                                                            className='profile-img-videogame'
+                                                        />
+
+
+                                                        <div className='d-flex flex-column'>
+
+                                                            <span className='username'>{videogame.name}</span>
+                                                            <span className='description'>{videogame.desc}</span>
+                                                            <span className='description'>{videogame.year}</span>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                ))}
+
+                                            </div>
+
+
+                                            <div className='content-post-user mb-3'>
+                                                <textarea
+                                                    id="id-comentario"
+                                                    name="comment"
+                                                    rows={5} 
+                                                    cols={40}
+                                                    className="form-control"
+                                                    placeholder="Escribe tu post aquí..."
+                                                    style={{ height: '200px' , resize: 'none' }}
+                                                    onChange={(e) => setComment(e.target.value)}
+                                                />
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <p>Tu calificación: {rating} estrellas</p>
+
+                                                {[1, 2, 3, 4, 5].map((value) => (
+
+                                                    <span
+                                                        key={value}
+                                                        style={{ cursor: 'pointer', marginRight: '5px' }}
+                                                        onClick={() => handleStarClick(value)}
+                                                    >
+                                                        {value <= rating ? <BiSolidStar /> : <BiStar />}
+                                                    </span>
+                                                ))}
+
+                                            </div>
+
+
+                                            <div className='d-flex justify-content-center w-100'>
+                                                <button type="submit" className="btn btn-primary mt-2 ">Publicar</button>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </form>
 
                             </>
 
