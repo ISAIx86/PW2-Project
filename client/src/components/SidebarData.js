@@ -34,6 +34,7 @@ export const SidebarData = [
         cName: 'nav-text'
     },
 
+
     {
         title: 'Notificaciones',
         path: '/notifications',

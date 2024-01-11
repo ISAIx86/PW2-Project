@@ -108,3 +108,8 @@
     height: auto;
 }
 
+
+
+.dropdown-toggle{
+    cursor: pointer;
+}

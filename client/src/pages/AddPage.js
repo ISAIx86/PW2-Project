@@ -279,7 +279,7 @@ function Add() {
                                             </div>
 
                                             <div className='d-flex justify-content-center w-100'>
-                                                <button type="submit" className="btn btn-primary mt-2 ">Publicar</button>
+                                                <button type="submit" className="btn btn-primary mt-2 col-lg-4 col-xs-12 col-md-3 mb-3">Publicar</button>
                                             </div>
 
                                         </div>
@@ -294,6 +294,8 @@ function Add() {
                         
 
                     </div>
+
+
 
                     <div className={`d-flex flex-column mt-2 ${activeTab === 'Resena' ? 'content-resena' : 'content-hidden'}`} >
         
@@ -344,14 +346,14 @@ function Add() {
                                             </div>
 
 
-                                            <div className='content-post-user mb-3'>
+                                            <div className='content-resena-user mb-3'>
                                                 <textarea
-                                                    id="id-comentario"
+                                                    id="id-reseña"
                                                     name="comment"
                                                     rows={5} 
                                                     cols={40}
                                                     className="form-control"
-                                                    placeholder="Escribe tu post aquí..."
+                                                    placeholder="Escribe tu reseña aquí..."
                                                     style={{ height: '200px' , resize: 'none' }}
                                                     onChange={(e) => setComment(e.target.value)}
                                                 />
@@ -378,7 +380,7 @@ function Add() {
 
 
                                             <div className='d-flex justify-content-center w-100'>
-                                                <button type="submit" className="btn btn-primary mt-2 ">Publicar</button>
+                                                <button type="submit" className="btn btn-primary mt-2 col-lg-4 col-xs-12 col-md-3 mb-3">Publicar</button>
                                             </div>
 
                                         </div>
