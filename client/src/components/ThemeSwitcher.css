@@ -1,0 +1,20 @@
+/* Estilos para el tema claro */
+.light-theme {
+    --background-color: #ffffff;
+    --text-color: #000000;
+  }
+  
+  /* Estilos para el tema oscuro */
+  .dark-theme {
+    --background-color: #000000;
+    --text-color: #ffffff;
+  }
+  
+  /* Aplicar estilos generales */
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  /* Estilos específicos para ciertos elementos según el tema */
+  /* Agrega más reglas según sea necesario */
